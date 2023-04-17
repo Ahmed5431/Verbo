@@ -6,11 +6,8 @@ from googletrans import Translator
 import json
 from tkinter import filedialog
 import time
-from tkinter import ttk
 import speech_recognition as sr
 import moviepy.editor
-import pydub
-from pydub import AudioSegment
 import os
 
 r = sr.Recognizer()
@@ -20,10 +17,6 @@ one.geometry("{}x{}+{}+{}".format(700, 450, 570, 270))
 one.wm_resizable(False,False)
 photo = PhotoImage(file = r"icon.png")
 one.iconphoto(True, photo)
-
-
-
-
 
 translator = Translator()
 
@@ -45,34 +38,51 @@ atr.geometry("{}x{}+{}+{}".format(600, 350, 570, 270))
 atr.resizable(False, False)
 
 
-def tmode(event):
-  if modetheme.get() == 'Dark':
+def tmode(event=None):
+  if themes_menu.get() == 'Dark':
     with open('settings.json', 'r') as f:
       data = json.load(f)
       data['theme'] = 'dark'
     with open('settings.json', 'w') as f:
       json.dump(data,f)
     ct.set_appearance_mode(data['theme'])
-    f.close()
-  elif modetheme.get() == 'Light':
+  elif themes_menu.get() == 'Light':
     with open('settings.json', 'r') as f:
       data = json.load(f)
       data['theme'] = 'light'
     with open('settings.json', 'w') as f:
       json.dump(data,f)
     ct.set_appearance_mode(data['theme'])
-    f.close()
 
+# Get config prefences from JSON
+def get_bg_theme():
+    with open("theme_config.json", "r") as f:
+        theme = json.load(f)
+    return theme["bg_theme"]
 
-with open ('settings.json', 'r') as f:
-  mode = json.load(f)
-  ct.set_appearance_mode(mode['theme'])
-  if mode['theme'] == 'dark':
-    modetheme = ct.CTkComboBox(one,corner_radius=15, values=["Dark","Light"],font=(None,15),command=tmode)
-  elif mode['theme']== 'light':
-    modetheme = ct.CTkComboBox(one,corner_radius=15, values=["Light","Dark"],font=(None,15),command=tmode)
-  modetheme.place(x=520,y=395)
-  f.close()
+# Set themes
+ct.set_appearance_mode(get_bg_theme())
+
+# Appearance theme
+def changeTheme(color):
+    color = color.lower()
+    themes_list = ["system", "dark", "light"]
+    if color in themes_list:
+        ct.set_appearance_mode(color)
+        to_change = "bg_theme"
+    else:
+        ct.set_default_color_theme(color)
+        ct.CTkLabel(one, text = "(Restart to take full effect)", font = ("arial", 12)).place(x = 242 , y = 415)
+        to_change = "default_color"
+    with open("theme_config.json", "r", encoding="utf8") as f:
+        theme = json.load(f)
+    with open("theme_config.json", "w", encoding="utf8") as f:
+        theme[to_change] = color
+        json.dump(theme, f, sort_keys = True, indent = 4, ensure_ascii = False)
+ct.CTkLabel(one, text = "Appearance Settings", font = ("arial bold", 19)).place(x=490, y=365)
+themes_menu = ct.CTkOptionMenu(one, values = ["System", "Dark", "Light"], width = 130, command = changeTheme, corner_radius = 15)
+themes_menu.place(x = 520 , y = 405)
+themes_menu.set(get_bg_theme().title())
 
 def closing():
   if messagebox.askokcancel("Exit","Are you sure you want to exit?"):
@@ -356,9 +366,6 @@ ct.CTkButton(one, text="Translate Audio", font=(None, 18), width= 130, height=30
 
 one.bind('<Return>', lambda event: translate())
 filetr.bind('<Return>', lambda event: tr_file())
-
-ct.CTkLabel(one, text="Appearance Mode:", font=(None,20,'roman')).place(x= 510, y=355)
-
 
 label_4.place(x= 380, y= 250)
 entry_1.place(x= 145, y= 140)
