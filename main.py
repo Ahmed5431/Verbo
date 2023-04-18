@@ -11,27 +11,29 @@ import moviepy.editor
 import os
 
 r = sr.Recognizer()
+photo = PhotoImage(file = r"icon.png")
+translator = Translator()
+
+#Setting the main Window
 one = ct.CTk()
 one.title('Translator')
 one.geometry("{}x{}+{}+{}".format(700, 450, 570, 270))
 one.wm_resizable(False,False)
-photo = PhotoImage(file = r"icon.png")
 one.iconphoto(True, photo)
 
-translator = Translator()
-
+# Setting ShowText Window
 show = ct.CTk()
 show.title("Translator")
 show.geometry("{}x{}+{}+{}".format(700, 200, 570, 270))
 show.resizable(True, False)
 
-
+# Setting FilesTranslate Window
 filetr = ct.CTk()
 filetr.title("Translator")
 filetr.geometry("{}x{}+{}+{}".format(600, 350, 570, 270))
 filetr.resizable(False, False)
 
-
+# Setting Audio-Videos Translate Window
 atr = ct.CTk()
 atr.title("Translator")
 atr.geometry("{}x{}+{}+{}".format(600, 350, 570, 270))
