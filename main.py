@@ -99,9 +99,8 @@ def translate():
     if tran.text == word:
         messagebox.showerror('Error', 'Please check your text.')
     else:
-      show.deiconify()
+      show_tr(f"Translation:\n\n{tran.text}")
       one.withdraw()
-      text.insert(END , f"Translation:\n\n{tran.text}")
   elif statues == "offline":
     messagebox.showerror('Error', 'Error: Please check your connection')
 # Text Translate button
@@ -116,12 +115,16 @@ def openfile_tr_win():
   file_tr_win.geometry(f"{600}x{350}+{570}+{270}")
   file_tr_win.resizable(False, False)
   file_tr_win.iconbitmap("icon.ico")
-  file_tr_win.protocol("WM_DELETE_WINDOW", closing)
 
   # On back button
   def back():
     one.deiconify()
     file_tr_win.withdraw()
+
+  filepath1 = ''
+  def locate_txt():
+    global filepath1
+    filepath1 = filedialog.askopenfilename(title= "Open a text file", filetypes=(("text files", "*.txt") , ("all files", "*.*")))
 
   # File translation function
   def tr_file():
@@ -165,9 +168,8 @@ def openfile_tr_win():
       global string
       for line in tredlines:
           string += (f"{line}\n")
-      text.insert(END, string)
       file_tr_win.withdraw()
-      show.deiconify()
+      show_tr(string)
       progress.set(0)
       if checkbox_3.get() == 1:
         data.write(string)
@@ -207,11 +209,17 @@ def openaudiotr():
   audio_tr_win.title("Audio Translator")
   audio_tr_win.geometry(f"{600}x{350}+{570}+{270}")
   audio_tr_win.resizable(False, False)
+  audio_tr_win.iconbitmap("icon.ico")
 
   # On back button
   def back():
     one.deiconify()
     audio_tr_win.withdraw()
+
+  def locate():
+    global filepath1
+    filepath1 = filedialog.askopenfilename(title= "Open a wav/mp4 file", filetypes=(("Video files", "*.mp4"), ("Audio files", "*.wav"), ("all files", "*.*")))
+  string = 'Translation: \n\n'
 
   # Audio translation function
   def audio_tr_winans():
@@ -253,9 +261,8 @@ def openaudiotr():
               audio_tr = translator.translate(data, dest=to_a)
           global string
           string += audio_tr_win.text
-          text.insert(END, string)
           audio_tr_win.withdraw()
-          show.deiconify()
+          show_tr(string)
           if checkbox_a2.get() == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
@@ -274,9 +281,8 @@ def openaudiotr():
           elif checkbox_a1.get() == 1:
               audio_tr = translator.translate(data, dest=to_a)
           string += audio_tr.text
-          text.insert(END, string)
           audio_tr_win.withdraw()
-          show.deiconify()
+          show_tr(string)
           if checkbox_a2.get() == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
@@ -306,63 +312,39 @@ def openaudiotr():
   ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_winans).place(x= 210, y= 250)
   ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 300)
 
-# Image translation window
-def openimagetr():
-  one.withdraw() # Main withdraw
-  # Start window
-  img_tr_win = ct.CTkToplevel()
-  img_tr_win.title("Image Translator")
-  img_tr_win.geometry(f"{600}x{350}+{570}+{270}")
-  img_tr_win.resizable(False, False)
-
 # Other windows open buttons
 ct.CTkButton(one, text="Translate File", font=(None, 18), width= 130, height=30, command=openfile_tr_win, corner_radius= 15).place(x=20, y= 357)
 ct.CTkButton(one, text="Translate Audio", font=(None, 18), width= 130, height=30, command=openaudiotr , corner_radius= 15).place(x=20, y= 400)
-ct.CTkButton(one, text="Translate Image", font=(None, 18), width= 130, height=30, command=openimagetr, corner_radius= 15).place(x=20, y= 314)
 
+# Show translation window
+def show_tr(translation):
+  # Window start
+  show_tr_win = ct.CTkToplevel()
+  show_tr_win.title("Translator show")
+  show_tr_win.geometry("{}x{}+{}+{}".format(700, 200, 570, 270))
+  show_tr_win.resizable(True, False)
 
-show = ct.CTk()
-show.title("Translator show")
-show.geometry("{}x{}+{}+{}".format(700, 200, 570, 270))
-show.resizable(True, False)
+  # On back button
+  def back():
+    one.deiconify()
+    show_tr_win.withdraw()
 
-def back():
-  show.withdraw()
-  one.deiconify()
-  text.delete("1.0", "end")
-  global string
-  string = 'Translation: \n\n'
-  global filepath1
-  filepath1 = ''
-  global filepath
-  filepath = ''
-
-show.protocol("WM_DELETE_WINDOW", back)
-
-label_show1 = ct.CTkLabel(show, text= "", font=(None, 21))
-label_show2 = ct.CTkLabel(show, text= "Translation :", font=(None, 23))
-label_show2.place(x= 30, y= 60)
-button_show = ct.CTkButton(show, text= 'Back', font=(None, 20), command=back, width=70)
-button_show.place(x= 20, y=155)
-scroll_v = Scrollbar(show)
-scroll_v.pack(side= RIGHT, fill="y")
-scroll_h = Scrollbar(show, orient= HORIZONTAL)
-scroll_h.pack(side= BOTTOM, fill= "x")
-text = Text(show, height= 500, width= 350, yscrollcommand= scroll_v.set, 
-xscrollcommand = scroll_h.set, wrap= NONE, font= ('Helvetica 15'))
-text.pack(fill = BOTH, expand=0)
-scroll_h.config(command = text.xview)
-scroll_v.config(command = text.yview)
-
-filepath1 = ''
-def locate_txt():
-  global filepath1
-  filepath1 = filedialog.askopenfilename(title= "Open a text file", filetypes=(("text files", "*.txt") , ("all files", "*.*")))
-
-def locate():
-  global filepath1
-  filepath1 = filedialog.askopenfilename(title= "Open a wav/mp4 file", filetypes=(("Video files", "*.mp4"), ("Audio files", "*.wav"), ("all files", "*.*")))
-string = 'Translation: \n\n'
+  # Show translation widgets
+  label_show1 = ct.CTkLabel(show_tr_win, text= "", font=(None, 21))
+  label_show2 = ct.CTkLabel(show_tr_win, text= "Translation :", font=(None, 23))
+  label_show2.place(x= 30, y= 60)
+  button_show = ct.CTkButton(show_tr_win, text= 'Back', font=(None, 20), command=back, width=70)
+  button_show.place(x= 20, y=155)
+  scroll_v = Scrollbar(show_tr_win)
+  scroll_v.pack(side= RIGHT, fill="y")
+  scroll_h = Scrollbar(show_tr_win, orient= HORIZONTAL)
+  scroll_h.pack(side= BOTTOM, fill= "x")
+  text = Text(show_tr_win, height= 500, width= 350, yscrollcommand= scroll_v.set, 
+  xscrollcommand = scroll_h.set, wrap= NONE, font= ('Helvetica 15'))
+  text.pack(fill = BOTH, expand=0)
+  text.insert(END, translation)
+  scroll_h.config(command = text.xview)
+  scroll_v.config(command = text.yview)
 
 
 one.mainloop()
