@@ -10,13 +10,6 @@ import speech_recognition as sr
 import moviepy.editor
 import os
 
-r = sr.Recognizer()
-translator = Translator()
-
-show = ct.CTk()
-show.title("Translator show")
-show.geometry("{}x{}+{}+{}".format(700, 200, 570, 270))
-show.resizable(True, False)
 
 # Get config prefences from JSON
 def get_bg_theme():
@@ -27,10 +20,12 @@ def get_bg_theme():
 # Set themes
 ct.set_appearance_mode(get_bg_theme())
 
+translator = Translator()
+
 # Starting main window
 one = ct.CTk()
 one.title('Translator')
-one.geometry("{}x{}+{}+{}".format(700, 450, 570, 270))
+one.geometry(f"{700}x{450}+{570}+{270}")
 one.wm_resizable(False, False)
 one.iconbitmap("icon.ico")
 
@@ -81,8 +76,6 @@ auto_checkbox.place(x= 440, y= 197)
 def closing():
   if messagebox.askokcancel("Exit", "Are you sure you want to exit?"):
     one.destroy()
-    show.destroy()
-    raise SystemExit
 one.protocol("WM_DELETE_WINDOW", closing)
 
 # Text translate function
@@ -120,7 +113,7 @@ def openfile_tr_win():
   # Open new window
   file_tr_win = ct.CTkToplevel()
   file_tr_win.title("File Translator")
-  file_tr_win.geometry("{}x{}+{}+{}".format(600, 350, 570, 270))
+  file_tr_win.geometry(f"{600}x{350}+{570}+{270}")
   file_tr_win.resizable(False, False)
   file_tr_win.iconbitmap("icon.ico")
   file_tr_win.protocol("WM_DELETE_WINDOW", closing)
@@ -212,7 +205,7 @@ def openaudiotr():
   # Window start
   audio_tr_win = ct.CTkToplevel()
   audio_tr_win.title("Audio Translator")
-  audio_tr_win.geometry("{}x{}+{}+{}".format(600, 350, 570, 270))
+  audio_tr_win.geometry(f"{600}x{350}+{570}+{270}")
   audio_tr_win.resizable(False, False)
 
   # On back button
@@ -222,6 +215,7 @@ def openaudiotr():
 
   # Audio translation function
   def audio_tr_winans():
+    r = sr.Recognizer()
     timeout = 1
     try:
       requests.head("http://www.google.com/", timeout=timeout)
@@ -231,7 +225,7 @@ def openaudiotr():
     from_a = combo_a1.get()
     to_a = combo_a2.get()
     data = ""
-    audio_tr_win = ''
+    audio_tr = ''
     filepath = entry_a.get()
     if filepath == "" and filepath1 == "":
       messagebox.showerror('Error', 'Error: Please type the file path')
@@ -254,9 +248,9 @@ def openaudiotr():
           adata = r.recognize_google(audio_data)
           data = f"{adata}"
           if checkbox_a1.get() == 0:
-              audio_tr_win = translator.translate(data, dest=to_a , src=from_a)
+              audio_tr = translator.translate(data, dest=to_a , src=from_a)
           elif checkbox_a1.get() == 1:
-              audio_tr_win = translator.translate(data, dest=to_a)
+              audio_tr = translator.translate(data, dest=to_a)
           global string
           string += audio_tr_win.text
           text.insert(END, string)
@@ -276,10 +270,10 @@ def openaudiotr():
           adata = r.recognize_google(audio_data)
           data = f"{adata}"
           if checkbox_a1.get() == 0:
-              audio_tr_win = translator.translate(data, dest=to_a , src=from_a)
+              audio_tr = translator.translate(data, dest=to_a , src=from_a)
           elif checkbox_a1.get() == 1:
-              audio_tr_win = translator.translate(data, dest=to_a)
-          string += audio_tr_win.text
+              audio_tr = translator.translate(data, dest=to_a)
+          string += audio_tr.text
           text.insert(END, string)
           audio_tr_win.withdraw()
           show.deiconify()
@@ -318,7 +312,7 @@ def openimagetr():
   # Start window
   img_tr_win = ct.CTkToplevel()
   img_tr_win.title("Image Translator")
-  img_tr_win.geometry("{}x{}+{}+{}".format(600, 350, 570, 270))
+  img_tr_win.geometry(f"{600}x{350}+{570}+{270}")
   img_tr_win.resizable(False, False)
 
 # Other windows open buttons
@@ -326,6 +320,11 @@ ct.CTkButton(one, text="Translate File", font=(None, 18), width= 130, height=30,
 ct.CTkButton(one, text="Translate Audio", font=(None, 18), width= 130, height=30, command=openaudiotr , corner_radius= 15).place(x=20, y= 400)
 ct.CTkButton(one, text="Translate Image", font=(None, 18), width= 130, height=30, command=openimagetr, corner_radius= 15).place(x=20, y= 314)
 
+
+show = ct.CTk()
+show.title("Translator show")
+show.geometry("{}x{}+{}+{}".format(700, 200, 570, 270))
+show.resizable(True, False)
 
 def back():
   show.withdraw()
