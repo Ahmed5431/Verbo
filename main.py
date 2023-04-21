@@ -75,6 +75,8 @@ def closing():
     one.destroy()
 one.protocol("WM_DELETE_WINDOW", closing)
 
+
+
 # Text translate function
 def translate():
   timeout = 1
@@ -121,6 +123,7 @@ def openfile_tr_win():
   file_tr_win.geometry(f"{700}x{450}+{570}+{270}")
   file_tr_win.resizable(False, False)
   file_tr_win.iconbitmap("icon.ico")
+  file_tr_win.protocol("WM_DELETE_WINDOW", closing)
 
   # On back button
   def back():
@@ -231,6 +234,7 @@ def openaudiotr():
   audio_tr_win.geometry(f"{700}x{450}+{570}+{270}")
   audio_tr_win.resizable(False, False)
   audio_tr_win.iconbitmap("icon.ico")
+  audio_tr_win.protocol("WM_DELETE_WINDOW", closing)
 
   # On back button
   def back():
