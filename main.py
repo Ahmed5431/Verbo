@@ -9,6 +9,7 @@ import time
 import speech_recognition as sr
 import moviepy.editor
 import os
+from pydub import AudioSegment
 
 
 # Get config prefences from JSON
@@ -237,7 +238,7 @@ def openaudiotr():
     audio_tr_win.withdraw()
 
   def locate():
-    filepath = filedialog.askopenfilename(title= "Open a wav/mp4 file", filetypes=(("Video files", "*.mp4"), ("Audio files", "*.wav"), ("all files", "*.*")))
+    filepath = filedialog.askopenfilename(title= "Open a wav/mp4 file", filetypes=(("Video files", "*.mp4"), ("Audio files", "*.wav"),("Audio files", "*.mp3"), ("all files", "*.*")))
     path_var.set(filepath)
 
   # Audio translation function
@@ -267,8 +268,30 @@ def openaudiotr():
           pass
       elif file_type == "wav":
           pass
+      elif file_type == "mp3":
+          pass
       else:
           return messagebox.showerror('Error', 'File format is not supported.')
+      if file_type == "mp3":
+        input = filepath
+        output = "audio_in_wav.wav"
+        audio = AudioSegment.from_mp3(input)
+        audio.export(output, format="wav")
+        with sr.AudioFile(output) as source:
+          audio_data = r.record(source)
+          adata = r.recognize_google(audio_data)
+          data = f"{adata}"
+          if from_language == "Auto":
+            audio_tr = translator.translate(data, dest=to_language)
+          else:
+            audio_tr = translator.translate(data, dest=to_language , src=from_language)
+          string = ""
+          string += audio_tr.text
+          audio_tr_win.withdraw()
+          show_tr(string)
+          if checkbox_a2.get() == 1:
+            save = open(f"{sfile[0]}.txt", "x")
+            save.write(string)
       if file_type == "wav":
         with sr.AudioFile(file_name) as source:
           audio_data = r.record(source)
@@ -278,7 +301,7 @@ def openaudiotr():
             audio_tr = translator.translate(data, dest=to_language)
           else:
             audio_tr = translator.translate(data, dest=to_language , src=from_language)
-          global string
+          string = ""
           string += audio_tr.text
           audio_tr_win.withdraw()
           show_tr(string)
@@ -299,6 +322,7 @@ def openaudiotr():
             audio_tr = translator.translate(data, dest=to_language)
           else:
             audio_tr = translator.translate(data, dest=to_language , src=from_language)
+            string = ""
           string += audio_tr.text
           audio_tr_win.withdraw()
           show_tr(string)
@@ -311,8 +335,8 @@ def openaudiotr():
       messagebox.showerror('Error', 'Error: Please check your connection')
 
   # Audio translation widgets
-  ct.CTkLabel(audio_tr_win, text= "Type The File Path               :", font=(None, 25)).place(x= 30, y= 30)
-  ct.CTkLabel(audio_tr_win, text= "(mp4/wav)", font=(None, 18)).place(x= 250, y= 32)
+  ct.CTkLabel(audio_tr_win, text= "Type The File Path                    :", font=(None, 25)).place(x= 30, y= 30)
+  ct.CTkLabel(audio_tr_win, text= "(mp4/wav/mp3)", font=(None, 18)).place(x= 250, y= 32)
   path_var = StringVar()
   entry_a = ct.CTkEntry(audio_tr_win, textvariable=path_var, width=430, height=30, font=(None, 21), corner_radius=15)
   entry_a.place(x= 30 , y= 75)
