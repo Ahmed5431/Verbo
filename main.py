@@ -117,7 +117,7 @@ def openfile_tr_win():
   # Open new window
   file_tr_win = ct.CTkToplevel()
   file_tr_win.title("File Translator")
-  file_tr_win.geometry(f"{600}x{350}+{570}+{270}")
+  file_tr_win.geometry(f"{700}x{450}+{570}+{270}")
   file_tr_win.resizable(False, False)
   file_tr_win.iconbitmap("icon.ico")
 
@@ -146,6 +146,8 @@ def openfile_tr_win():
       with open(filepath, "r+", encoding="utf8") as data:
         global lines
         lines = data.readlines()
+        if lines == []:
+          return messagebox.showerror('Error', 'Error: The file is empty')
         tredlines = []
         progress.configure(determinate_speed=50/len(lines))
         try:
@@ -172,38 +174,52 @@ def openfile_tr_win():
           string = ""
           for line in tredlines:
               string += (f"{line}\n")
-          file_tr_win.withdraw()
-          show_tr(string)
           progress.set(0)
-          if checkbox_3.get() == 1:
+          choice_value = radio_value.get()
+          file_name = os.path.basename(filepath)
+          file_type = file_name.split(".")[-1].strip()
+          if choice_value == 1:
+            with open(f"{file_name}_translated.{file_type}", "w", encoding="utf8") as file:
+              file.write(string)
+          elif choice_value == 2:
             data.write(f"\n\n{string}")
-          else:
-            pass
+          elif choice_value == 3:
+            with open(filepath, "w", encoding="utf8") as file:
+              file.truncate(0)
+              file.write(string)
+          print("tst")
         elif statues == "offline":
-          messagebox.showerror('Error', 'Error: Please check your connection')
+          return messagebox.showerror('Error', 'Error: Please check your connection')
+      messagebox.showinfo('Done', 'File is translated.')
   file_tr_win.bind('<Return>', lambda event: tr_file())
 
   # File translation window widgets
   ct.CTkLabel(file_tr_win, text= "Type The File Path (txt):", font=(None, 25)).place(x= 30, y= 30)
   file_path_var = StringVar()
-  file_path_entry = ct.CTkEntry(file_tr_win, textvariable=file_path_var, width=430, height=30, font=(None, 21), corner_radius=15)
+  file_path_entry = ct.CTkEntry(file_tr_win, textvariable=file_path_var, width=430, height=30, font=(None, 15), corner_radius=15)
   file_path_entry.place(x= 30 , y= 75)
   ct.CTkButton(file_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate_txt).place(x=470, y=75)
-  ct.CTkLabel(file_tr_win, text= "From:", font=(None, 20)).place(x= 30, y=120)
-  ct.CTkLabel(file_tr_win, text= "To:", font=(None, 20)).place(x= 210 , y= 120)
+  ct.CTkLabel(file_tr_win, text= "From:", font=(None, 20)).place(x= 40, y=130)
+  ct.CTkLabel(file_tr_win, text= "To:", font=(None, 20)).place(x= 220 , y= 130)
   from_lang_list = ["Auto" ,"Arabic", "German", "English", "French"]
   from_lang_combo = ct.CTkComboBox(file_tr_win, width= 90, corner_radius=15, values= from_lang_list)
-  from_lang_combo.place(x=90, y=120)
+  from_lang_combo.place(x=100, y=130)
   to_lang_list = ["Arabic", "German", "English", "French"]
   to_lang_combo = ct.CTkComboBox(file_tr_win, width= 90, values= to_lang_list, corner_radius=15)
-  to_lang_combo.place(x=245, y=120)
-  checkbox_3 = ct.CTkCheckBox(file_tr_win, text ="Update file with translation", corner_radius=15, font=(None, 16))
-  checkbox_3.place(x=380, y=123)
-  ct.CTkButton(file_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=tr_file).place(x= 210, y= 250)
-  ct.CTkButton(file_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 300)
+  to_lang_combo.place(x=255, y=130)
+  radio_value = IntVar()
+  radio_value.set(1)
+  new_file_radio = ct.CTkRadioButton(file_tr_win, variable=radio_value, value=1, text ="New file with translation", font=(None, 20))
+  new_file_radio.place(x=400, y=170)
+  update_file_radio = ct.CTkRadioButton(file_tr_win, variable=radio_value, value=2, text ="Update file with translation", font=(None, 20))
+  update_file_radio.place(x=400, y=205)
+  replace_file_radio = ct.CTkRadioButton(file_tr_win, variable=radio_value, value=3, text ="Replace file with translation", font=(None, 20))
+  replace_file_radio.place(x=400, y=240)
+  ct.CTkButton(file_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=tr_file).place(x= 250, y= 330)
+  ct.CTkButton(file_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 400)
   progress = ct.CTkProgressBar(file_tr_win, width=240, mode= 'determinate', height= 10, corner_radius=20)
   progress.set(0)
-  progress.place(x=190, y=320)
+  progress.place(x=230, y=400)
 
 # Audio translation window
 def openaudiotr():
@@ -211,7 +227,7 @@ def openaudiotr():
   # Window start
   audio_tr_win = ct.CTkToplevel()
   audio_tr_win.title("Audio Translator")
-  audio_tr_win.geometry(f"{600}x{350}+{570}+{270}")
+  audio_tr_win.geometry(f"{700}x{450}+{570}+{270}")
   audio_tr_win.resizable(False, False)
   audio_tr_win.iconbitmap("icon.ico")
 
@@ -311,8 +327,8 @@ def openaudiotr():
   to_lang_combo.place(x=250, y=120)
   checkbox_a2 = ct.CTkCheckBox(audio_tr_win, text ="Save the audio translation", corner_radius=15, font=(None, 16))
   checkbox_a2.place(x=380, y=120)
-  ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_winans).place(x= 210, y= 250)
-  ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 300)
+  ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_winans).place(x= 270, y= 350)
+  ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 400)
 
 # Other windows open buttons
 ct.CTkButton(one, text="Translate File", font=(None, 18), width= 130, height=30, command=openfile_tr_win, corner_radius= 15).place(x=20, y= 357)
@@ -323,7 +339,7 @@ def show_tr(translation):
   # Window start
   show_tr_win = ct.CTkToplevel()
   show_tr_win.title("Translator show")
-  show_tr_win.geometry("{}x{}+{}+{}".format(700, 200, 570, 270))
+  show_tr_win.geometry(f"{700}x{450}+{570}+{270}")
   show_tr_win.resizable(True, False)
 
   # On back button
