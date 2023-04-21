@@ -51,27 +51,22 @@ themes_menu.place(x = 520 , y = 405)
 themes_menu.set(get_bg_theme().title())
 
 # Main window widgets
-ct.CTkLabel(one, text= "Enter The Text:", font=(None, 29, 'bold')).place(x= 250, y= 85)
-ct.CTkLabel(one, text= "From:", font=(None, 20)).place(x= 185, y= 210)
-ct.CTkLabel(one, text= "To:", font=(None, 20)).place(x= 380, y= 210)
-tr_entry = ct.CTkEntry(one, width=420, height=30, font=(None, 21), corner_radius=15)
-tr_entry.place(x= 145, y= 140)
+ct.CTkLabel(one, text= "Enter The Text:", font=(None, 29, 'bold')).place(x= 85, y= 25)
+ct.CTkLabel(one, text= "The Translation:", font=(None, 29, 'bold')).place(x= 397, y= 25)
+ct.CTkLabel(one, text= "From:", font=(None, 20)).place(x= 110, y= 235)
+ct.CTkLabel(one, text= "To:", font=(None, 20)).place(x= 430, y= 235)
+tr_textbox = ct.CTkTextbox(one, width=280, height=150, font=(None, 21), corner_radius=15)
+tr_textbox.place(x= 50, y= 70)
+to_tr_textbox = ct.CTkTextbox(one, width=280, height=150, font=(None, 21), corner_radius=15)
+to_tr_textbox.place(x= 370, y= 70)
+to_tr_textbox.configure(state="disabled")
 from_lang_list = ["Auto", "Arabic", "German", "English", "French"]
 from_lang_combo = ct.CTkComboBox(one, width= 90, values= from_lang_list, corner_radius=15)
-from_lang_combo.place(x= 245, y= 212)
+from_lang_combo.place(x= 170, y= 237)
 to_lang_list = ["Arabic", "German", "English", "French"]
 to_lang_combo = ct.CTkComboBox(one, width= 90, values= to_lang_list, corner_radius= 15)
-to_lang_combo.place(x= 415, y= 212)
+to_lang_combo.place(x= 465, y= 237)
 one.bind('<Return>', lambda event: translate())
-
-# # Auto checkbox
-# def auto_checkbox_click():
-#   if auto_checkbox.get() == 1:
-#     combo_1.configure(values=["Auto"])
-#   else:
-#     combo_1.configure(values= ["Arabic", "Germany", "English", "French"])
-# auto_checkbox = ct.CTkCheckBox(one, text= None, command= auto_checkbox_click, corner_radius=15)
-# auto_checkbox.place(x= 440, y= 197)
 
 # On closing the app
 def closing():
@@ -83,7 +78,7 @@ one.protocol("WM_DELETE_WINDOW", closing)
 def translate():
   timeout = 1
   statues = ""
-  word = tr_entry.get()
+  word = tr_textbox.get("1.0", END)
   from_language = from_lang_combo.get()
   to_language = to_lang_combo.get()
 
@@ -107,12 +102,14 @@ def translate():
     if tran.text == word:
         messagebox.showerror('Error', 'Please check your text or language selection.')
     else:
-      show_tr(f"Translation:\n\n{tran.text}")
-      one.withdraw()
+      to_tr_textbox.configure(state="normal")
+      to_tr_textbox.delete("1.0", END)
+      to_tr_textbox.insert(END, tran.text)
+      to_tr_textbox.configure(state="disabled")
   elif statues == "offline":
     messagebox.showerror('Error', 'Error: Please check your connection')
 # Text Translate button
-ct.CTkButton(one, text="Translate", corner_radius = 16 , font=(None, 20), width= 190, height=40, command=translate).place(x=255, y= 280)
+ct.CTkButton(one, text="Translate", corner_radius = 16 , font=(None, 20), width= 190, height=40, command=translate).place(x=255, y= 295)
 
 # Open file translation window
 def openfile_tr_win():
