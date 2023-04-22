@@ -8,8 +8,12 @@ from tkinter import filedialog
 import time
 import speech_recognition as sr
 import moviepy.editor
+from moviepy.editor import TextClip,CompositeVideoClip
 import os
 from pydub import AudioSegment
+from moviepy.video.io.VideoFileClip import VideoFileClip
+import pysrt
+
 
 
 # Get config prefences from JSON
@@ -256,6 +260,8 @@ def openaudiotr():
 
   # Audio translation function
   def audio_tr_winans():
+    checkvalue = radio_value2.get()
+    print(radio_value2.get())
     r = sr.Recognizer()
     timeout = 1
     try:
@@ -279,6 +285,7 @@ def openaudiotr():
     if statues == 'online':
       file_name = os.path.basename(filepath)
       file_type = file_name.split(".")[-1].strip()
+
       if file_type == "mp4":
           pass
       elif file_type == "wav":
@@ -287,6 +294,8 @@ def openaudiotr():
           pass
       else:
           return messagebox.showerror('Error', 'File format is not supported.')
+      if file_type == 'wav' or file_type == 'mp3' and checkvalue ==2:
+        return messagebox.showerror('Error', ' You can\'t use this option with an audio file')
       if file_type == "mp3":
         input = filepath
         output = "audio_in_wav.wav"
@@ -306,7 +315,7 @@ def openaudiotr():
           tr_textbox.delete("1.0", END)
           tr_textbox.insert(END, string)
           tr_textbox.configure(state="disabled")
-          if checkbox_a2.get() == 1:
+          if checkvalue == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
       if file_type == "wav":
@@ -324,17 +333,47 @@ def openaudiotr():
           tr_textbox.delete("1.0", END)
           tr_textbox.insert(END, string)
           tr_textbox.configure(state="disabled")
-          if checkbox_a2.get() == 1:
+          if checkvalue.get() == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
 
       elif file_type == "mp4":
-        videof = file_name
-        video = moviepy.editor.VideoFileClip(videof)
-        audio = video.audio
-        sfile = file_name.split(".")
-        audio.write_audiofile(f"{sfile[0]}.wav")
-        with sr.AudioFile(f"{sfile[0]}.wav") as source:
+        if checkvalue == 2:
+          video = moviepy.editor.VideoFileClip(filepath)
+          audio = video.audio
+          audio.write_audiofile("audio.wav")
+          r = sr.Recognizer()
+          with sr.AudioFile("audio.wav") as source:
+           audio = r.listen(source)
+           try:
+            text = r.recognize_google(audio)
+           except:
+            text = ""
+          subs = pysrt.SubRipFile()
+          sentences = text.split(". ")
+          start = 0
+          end = 0
+          for i, s in enumerate(sentences):
+           duration = len(s.split()) * 0.6
+           end = start + duration
+           item = pysrt.SubRipItem()
+           item.index = i + 1
+           item.start.seconds = start
+           item.end.seconds = end
+           translation = translator.translate(s, dest=to_language , src=from_language)
+           item.text = translation.text
+           subs.append(item)
+           start = end
+          subs.save("subtitles.srt", encoding="utf-8")
+          os.remove('audio.wav')
+
+        else:
+         videof = filepath
+         video = moviepy.editor.VideoFileClip(videof)
+         audio = video.audio
+         sfile = file_name.split(".")
+         audio.write_audiofile(f"{sfile[0]}.wav")
+         with sr.AudioFile(f"{sfile[0]}.wav") as source:
           audio_data = r.record(source)
           adata = r.recognize_google(audio_data)
           data = f"{adata}"
@@ -342,17 +381,17 @@ def openaudiotr():
             audio_tr = translator.translate(data, dest=to_language)
           else:
             audio_tr = translator.translate(data, dest=to_language , src=from_language)
-            string = ""
+          string = ""
           string += audio_tr.text
           tr_textbox.configure(state="normal")
           tr_textbox.delete("1.0", END)
           tr_textbox.insert(END, string)
           tr_textbox.configure(state="disabled")
-          if checkbox_a2.get() == 1:
+          if checkvalue == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
-        path = os.path.join(f"{sfile[0]}.wav")
-        os.remove(path)
+         path = os.path.join(f"{sfile[0]}.wav")
+         os.remove(path)
     elif statues == 'offline':
       messagebox.showerror('Error', 'Error: Please check your connection')
     elif statues == "timeout":
@@ -373,8 +412,11 @@ def openaudiotr():
   to_lang_combo= ct.CTkComboBox(audio_tr_win, width= 90, values= to_lang_list, corner_radius=15)
   from_lang_combo.place(x=97, y=125)
   to_lang_combo.place(x=252, y=125)
-  checkbox_a2 = ct.CTkCheckBox(audio_tr_win, text ="Save the translation in a txt file", corner_radius=15, font=(None, 16))
-  checkbox_a2.place(x=35, y=170)
+  radio_value2 = IntVar()
+  radio_a2 = ct.CTkRadioButton(audio_tr_win, variable=radio_value2, value=1, text ="Save the translation in a txt file",corner_radius=15, font=(None, 16))
+  radio_a2.place(x=35, y=170)
+  radio_a3 = ct.CTkRadioButton(audio_tr_win, variable=radio_value2, value=2,text ="Save the translation in a srt file", corner_radius=15, font=(None, 16))
+  radio_a3.place(x=35, y=200)
   ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_winans).place(x= 270, y= 350)
   ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 400)
   ct.CTkLabel(audio_tr_win, text= "The Translation:", font=(None, 25,'bold')).place(x= 440, y=30 )
