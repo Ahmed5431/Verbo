@@ -71,11 +71,8 @@ one.bind('<Return>', lambda event: translate())
 
 # On closing the app
 def closing():
-  if messagebox.askokcancel("Exit", "Are you sure you want to exit?"):
-    one.destroy()
+  one.destroy()
 one.protocol("WM_DELETE_WINDOW", closing)
-
-
 
 # Text translate function
 def translate():
@@ -96,7 +93,8 @@ def translate():
     statues = "online"
   except requests.ConnectionError:
     statues= "offline"
-
+  except requests.exceptions.Timeout:
+    statues = "timeout"
   if statues == "online":
     if from_language == "Auto":
       tran = translator.translate(word, dest=to_language)
@@ -110,7 +108,9 @@ def translate():
       to_tr_textbox.insert(END, tran.text)
       to_tr_textbox.configure(state="disabled")
   elif statues == "offline":
-    messagebox.showerror('Error', 'Error: Please check your connection')
+    messagebox.showerror('Error', 'Please check your connection')
+  elif statues == "timeout":
+    messagebox.showerror('Error', 'Connection timeout. Please try again later.')
 # Text Translate button
 ct.CTkButton(one, text="Translate", corner_radius = 16 , font=(None, 20), width= 190, height=40, command=translate).place(x=255, y= 295)
 
@@ -136,7 +136,6 @@ def openfile_tr_win():
 
   # File translation function
   def tr_file():
-    print(radio_value.get())
     timeout = 1
     from_language = from_lang_combo.get()
     to_language = to_lang_combo.get()
@@ -160,6 +159,8 @@ def openfile_tr_win():
           statues = "online"
         except requests.ConnectionError:
           statues= "offline"
+        except requests.exceptions.Timeout:
+          statues = "timeout"
         if statues == 'online':
           if from_language == "Auto":
             for line in lines:
@@ -183,12 +184,11 @@ def openfile_tr_win():
           choice_value = radio_value.get()
           file_name = os.path.basename(filepath)
           file_type = file_name.split(".")[-1].strip()
-          if choice_value == 0:
-            tr_textbox.configure(state="normal")
-            tr_textbox.delete("1.0", END)
-            tr_textbox.insert(END, string)
-            tr_textbox.configure(state="disabled")
-          elif choice_value == 1:
+          tr_textbox.configure(state="normal")
+          tr_textbox.delete("1.0", END)
+          tr_textbox.insert(END, string)
+          tr_textbox.configure(state="disabled")
+          if choice_value == 1:
             with open(f"{file_name}_translated.{file_type}", "w", encoding="utf8") as file:
               file.write(string)
           elif choice_value == 2:
@@ -198,8 +198,9 @@ def openfile_tr_win():
               file.truncate(0)
               file.write(string)
         elif statues == "offline":
-          return messagebox.showerror('Error', 'Error: Please check your connection')
-      messagebox.showinfo('Done', 'File is translated.')
+          messagebox.showerror('Error', 'Please check your connection')
+        elif statues == "timeout":
+          messagebox.showerror('Error', 'Connection timeout. Please try again later.')
   file_tr_win.bind('<Return>', lambda event: tr_file())
 
   # File translation window widgets
@@ -262,6 +263,8 @@ def openaudiotr():
       statues = "online"
     except requests.ConnectionError:
       statues= "offline"
+    except requests.exceptions.Timeout:
+      statues = "timeout"
     from_language = from_lang_combo.get()
     to_language = to_lang_combo.get()
     data = ""
@@ -299,8 +302,10 @@ def openaudiotr():
             audio_tr = translator.translate(data, dest=to_language , src=from_language)
           string = ""
           string += audio_tr.text
-          audio_tr_win.withdraw()
-          show_tr(string)
+          tr_textbox.configure(state="normal")
+          tr_textbox.delete("1.0", END)
+          tr_textbox.insert(END, string)
+          tr_textbox.configure(state="disabled")
           if checkbox_a2.get() == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
@@ -315,8 +320,10 @@ def openaudiotr():
             audio_tr = translator.translate(data, dest=to_language , src=from_language)
           string = ""
           string += audio_tr.text
-          audio_tr_win.withdraw()
-          show_tr(string)
+          tr_textbox.configure(state="normal")
+          tr_textbox.delete("1.0", END)
+          tr_textbox.insert(END, string)
+          tr_textbox.configure(state="disabled")
           if checkbox_a2.get() == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
@@ -337,8 +344,10 @@ def openaudiotr():
             audio_tr = translator.translate(data, dest=to_language , src=from_language)
             string = ""
           string += audio_tr.text
-          audio_tr_win.withdraw()
-          show_tr(string)
+          tr_textbox.configure(state="normal")
+          tr_textbox.delete("1.0", END)
+          tr_textbox.insert(END, string)
+          tr_textbox.configure(state="disabled")
           if checkbox_a2.get() == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
@@ -346,60 +355,35 @@ def openaudiotr():
         os.remove(path)
     elif statues == 'offline':
       messagebox.showerror('Error', 'Error: Please check your connection')
+    elif statues == "timeout":
+      messagebox.showerror('Error', 'Connection timeout. Please try again later.')
 
   # Audio translation widgets
-  ct.CTkLabel(audio_tr_win, text= "Type The File Path                    :", font=(None, 25)).place(x= 30, y= 30)
-  ct.CTkLabel(audio_tr_win, text= "(mp4/wav/mp3)", font=(None, 18)).place(x= 250, y= 32)
+  ct.CTkLabel(audio_tr_win, text= "Type The File Path                    :", font=(None, 23)).place(x= 30, y= 30)
+  ct.CTkLabel(audio_tr_win, text= "(mp4/wav/mp3)", font=(None, 17)).place(x= 235, y= 32)
   path_var = StringVar()
-  entry_a = ct.CTkEntry(audio_tr_win, textvariable=path_var, width=430, height=30, font=(None, 21), corner_radius=15)
+  entry_a = ct.CTkEntry(audio_tr_win, textvariable=path_var, width=260, height=30, font=(None, 21), corner_radius=15)
   entry_a.place(x= 30 , y= 75)
-  ct.CTkButton(audio_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate).place(x=470, y=75)
-  ct.CTkLabel(audio_tr_win, text= "From:", font=(None, 20)).place(x= 30, y=120)
-  ct.CTkLabel(audio_tr_win, text= "To:", font=(None, 20)).place(x= 210 , y= 120)
+  ct.CTkButton(audio_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate).place(x=300, y=75)
+  ct.CTkLabel(audio_tr_win, text= "From:", font=(None, 20)).place(x= 35, y=125)
+  ct.CTkLabel(audio_tr_win, text= "To:", font=(None, 20)).place(x= 215 , y= 125)
   from_lang_list = ["Auto", "Arabic", "German", "English", "French"]
   from_lang_combo = ct.CTkComboBox(audio_tr_win, width= 90, corner_radius=15, values= from_lang_list)
   to_lang_list = ["Arabic", "German", "English", "French"]
   to_lang_combo= ct.CTkComboBox(audio_tr_win, width= 90, values= to_lang_list, corner_radius=15)
-  from_lang_combo.place(x=95, y=120)
-  to_lang_combo.place(x=250, y=120)
-  checkbox_a2 = ct.CTkCheckBox(audio_tr_win, text ="Save the audio translation", corner_radius=15, font=(None, 16))
-  checkbox_a2.place(x=380, y=120)
+  from_lang_combo.place(x=97, y=125)
+  to_lang_combo.place(x=252, y=125)
+  checkbox_a2 = ct.CTkCheckBox(audio_tr_win, text ="Save the translation in a txt file", corner_radius=15, font=(None, 16))
+  checkbox_a2.place(x=35, y=170)
   ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_winans).place(x= 270, y= 350)
   ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 400)
+  ct.CTkLabel(audio_tr_win, text= "The Translation:", font=(None, 25,'bold')).place(x= 440, y=30 )
+  tr_textbox = ct.CTkTextbox(audio_tr_win, width=280, height=230, font=(None, 21), corner_radius=15)
+  tr_textbox.place(x= 400, y= 80)
+  tr_textbox.configure(state="disabled")
 
 # Other windows open buttons
 ct.CTkButton(one, text="Translate File", font=(None, 18), width= 130, height=30, command=openfile_tr_win, corner_radius= 15).place(x=20, y= 357)
 ct.CTkButton(one, text="Translate Audio/Video", font=(None, 18), width= 130, height=30, command=openaudiotr , corner_radius= 15).place(x=20, y= 400)
-
-# Show translation window
-def show_tr(translation):
-  # Window start
-  show_tr_win = ct.CTkToplevel()
-  show_tr_win.title("Translator show")
-  show_tr_win.geometry(f"{700}x{450}+{570}+{270}")
-  show_tr_win.resizable(True, False)
-
-  # On back button
-  def back():
-    one.deiconify()
-    show_tr_win.withdraw()
-
-  # Show translation widgets
-  label_show1 = ct.CTkLabel(show_tr_win, text= "", font=(None, 21))
-  label_show2 = ct.CTkLabel(show_tr_win, text= "Translation :", font=(None, 23))
-  label_show2.place(x= 30, y= 60)
-  button_show = ct.CTkButton(show_tr_win, text= 'Back', font=(None, 20), command=back, width=70)
-  button_show.place(x= 20, y=155)
-  scroll_v = Scrollbar(show_tr_win)
-  scroll_v.pack(side= RIGHT, fill="y")
-  scroll_h = Scrollbar(show_tr_win, orient= HORIZONTAL)
-  scroll_h.pack(side= BOTTOM, fill= "x")
-  text = Text(show_tr_win, height= 500, width= 350, yscrollcommand= scroll_v.set, 
-  xscrollcommand = scroll_h.set, wrap= NONE, font= ('Helvetica 15'))
-  text.pack(fill = BOTH, expand=0)
-  text.insert(END, translation)
-  scroll_h.config(command = text.xview)
-  scroll_v.config(command = text.yview)
-
 
 one.mainloop()
