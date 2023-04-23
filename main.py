@@ -464,6 +464,7 @@ def openhistory():
       cursor = db.cursor()
       cursor.execute("SELECT original, translation, time_stamp FROM history")
       data = cursor.fetchall()
+    data = sorted(data, key=lambda x: x[2], reverse=True)
     for row in data:
       row = list(row)
       original = str(row[0]).replace("\n", "")
