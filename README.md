@@ -1,5 +1,4 @@
 # Translator
-https://icons8.com/icon/KniCOB9YDHbU/translate-text
 
 # Features
 
