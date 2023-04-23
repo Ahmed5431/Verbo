@@ -8,12 +8,11 @@ from tkinter import filedialog
 import time
 import speech_recognition as sr
 import moviepy.editor
-from moviepy.editor import TextClip,CompositeVideoClip
 import os
 from pydub import AudioSegment
-from moviepy.video.io.VideoFileClip import VideoFileClip
 import pysrt
-
+import sqlite3
+from datetime import datetime
 
 
 # Get config prefences from JSON
@@ -78,6 +77,11 @@ def closing():
   one.destroy()
 one.protocol("WM_DELETE_WINDOW", closing)
 
+# On back button
+def back(window):
+  one.deiconify()
+  window.withdraw()
+
 # Text translate function
 def translate():
   timeout = 1
@@ -111,6 +115,13 @@ def translate():
       to_tr_textbox.delete("1.0", END)
       to_tr_textbox.insert(END, tran.text)
       to_tr_textbox.configure(state="disabled")
+    current_string = datetime.now() # Current date in string/readable format
+    current_timestamp = int(current_string.timestamp()) # Current date as a time stamp
+    with sqlite3.connect("history.db") as db:
+      cursor = db.cursor()
+      cursor.execute("CREATE TABLE IF NOT EXISTS history (original TEXT, translation TEXT, time_stamp INTEGER)")
+      cursor.execute("INSERT INTO history (original, translation, time_stamp) VALUES (?, ?, ?)", (word, tran.text, current_timestamp,))
+      db.commit()
   elif statues == "offline":
     messagebox.showerror('Error', 'Please check your connection')
   elif statues == "timeout":
@@ -128,11 +139,6 @@ def openfile_tr_win():
   file_tr_win.resizable(False, False)
   file_tr_win.iconbitmap("icon.ico")
   file_tr_win.protocol("WM_DELETE_WINDOW", closing)
-
-  # On back button
-  def back():
-    one.deiconify()
-    file_tr_win.withdraw()
 
   def locate_txt():
     filepath = filedialog.askopenfilename(title= "Open a text file", filetypes=(("text files", "*.txt") , ("all files", "*.*")))
@@ -229,7 +235,7 @@ def openfile_tr_win():
   replace_file_radio = ct.CTkRadioButton(file_tr_win, variable=radio_value, value=3, text ="Replace file with translation", font=(None, 20))
   replace_file_radio.place(x=40, y=255)
   ct.CTkButton(file_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=tr_file).place(x= 250, y= 330)
-  ct.CTkButton(file_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 400)
+  ct.CTkButton(file_tr_win, text= 'Back', font=(None, 20), command=lambda: back(file_tr_win), corner_radius=15, width=70).place(x=20, y= 400)
   progress = ct.CTkProgressBar(file_tr_win, width=240, mode= 'determinate', height= 10, corner_radius=20)
   progress.set(0)
   progress.place(x=230, y=400)
@@ -248,11 +254,6 @@ def openaudiotr():
   audio_tr_win.resizable(False, False)
   audio_tr_win.iconbitmap("icon.ico")
   audio_tr_win.protocol("WM_DELETE_WINDOW", closing)
-
-  # On back button
-  def back():
-    one.deiconify()
-    audio_tr_win.withdraw()
 
   def locate():
     filepath = filedialog.askopenfilename(title= "Open a wav/mp4 file", filetypes=(("Video files", "*.mp4"), ("Audio files", "*.wav"),("Audio files", "*.mp3"), ("all files", "*.*")))
@@ -418,14 +419,67 @@ def openaudiotr():
   radio_a3 = ct.CTkRadioButton(audio_tr_win, variable=radio_value2, value=2,text ="Save the translation in a srt file", corner_radius=15, font=(None, 16))
   radio_a3.place(x=35, y=200)
   ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_winans).place(x= 270, y= 350)
-  ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=back, corner_radius=15, width=70).place(x=20, y= 400)
+  ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=lambda: back(audio_tr_win), corner_radius=15, width=70).place(x=20, y= 400)
   ct.CTkLabel(audio_tr_win, text= "The Translation:", font=(None, 25,'bold')).place(x= 440, y=30 )
   tr_textbox = ct.CTkTextbox(audio_tr_win, width=280, height=230, font=(None, 21), corner_radius=15)
   tr_textbox.place(x= 400, y= 80)
   tr_textbox.configure(state="disabled")
 
+# History window
+def openhistory():
+  one.withdraw() # Main withdraw
+  # Window start
+  history_win = ct.CTkToplevel()
+  history_win.title("Translation History")
+  history_win.geometry(f"{700}x{450}+{570}+{270}")
+  history_win.resizable(False, False)
+  history_win.iconbitmap("icon.ico")
+  history_win.protocol("WM_DELETE_WINDOW", closing)
+
+  def delete_history():
+    if os.path.isfile("history.db") == False:  messagebox.showerror("Error", "You didn't translate anything yet.")
+    ask = messagebox.askokcancel("Are you sure?", "Your whole history will be deleted, you wanna continue?")
+    if ask == True:
+      try:
+        with sqlite3.connect("history.db") as db:
+          cursor = db.cursor()
+          cursor.execute("DROP TABLE history")
+          db.commit()
+        history_textbox.configure(state="normal")
+        history_textbox.delete("1.0", END)
+        history_textbox.configure(state="disabled")
+      except sqlite3.OperationalError:  messagebox.showerror("Error", "Your history is already cleared.")
+
+  # History widgets
+  history_textbox = ct.CTkTextbox(history_win, width=679, height=370, font=(None, 20), corner_radius=15)
+  history_textbox.place(x= 10, y= 10)
+  history_textbox.configure(state="disabled")
+  ct.CTkButton(history_win, text= 'Back', font=(None, 20), command=lambda: back(history_win), corner_radius=15, width=70).place(x=20, y= 400)
+  ct.CTkButton(history_win, text= 'Delete History', font=(None, 20), command=delete_history, corner_radius=15, width=70, fg_color="red").place(x=525, y= 400)
+
+  # Show history
+  if os.path.isfile("history.db") == False: return
+  try:
+    with sqlite3.connect("history.db") as db:
+      cursor = db.cursor()
+      cursor.execute("SELECT original, translation, time_stamp FROM history")
+      data = cursor.fetchall()
+    data = sorted(data, key=lambda x: x[2], reverse=True)
+    for row in data:
+      row = list(row)
+      original = str(row[0]).replace("\n", "")
+      translation = str(row[1])
+      time_stamp = int(row[2])
+      date = datetime.fromtimestamp(time_stamp).strftime("%B %d, %Y %H:%M")
+      history_textbox.configure(state="normal")
+      history_textbox.insert(END, f"{date} --- {original} = {translation}\n")
+      history_textbox.configure(state="disabled")
+    history_textbox.configure(state="disabled")
+  except sqlite3.OperationalError: pass
+
 # Other windows open buttons
-ct.CTkButton(one, text="Translate File", font=(None, 18), width= 130, height=30, command=openfile_tr_win, corner_radius= 15).place(x=20, y= 357)
-ct.CTkButton(one, text="Translate Audio/Video", font=(None, 18), width= 130, height=30, command=openaudiotr , corner_radius= 15).place(x=20, y= 400)
+ct.CTkButton(one, text="Translate File", font=(None, 18), width= 130, height=30, command=openfile_tr_win, corner_radius= 15).place(x=20, y= 310)
+ct.CTkButton(one, text="Translate Audio/Video", font=(None, 18), width= 130, height=30, command=openaudiotr , corner_radius= 15).place(x=20, y= 355)
+ct.CTkButton(one, text="Translation History", font=(None, 18), width= 130, height=30, command=openhistory, corner_radius= 15).place(x=20, y= 400)
 
 one.mainloop()
