@@ -150,6 +150,8 @@ def openfile_tr_win():
     from_language = from_lang_combo.get()
     to_language = to_lang_combo.get()
     filepath = file_path_var.get()
+    file_name = os.path.basename(filepath)
+    file_type = file_name.split(".")[-1].strip()
     if filepath.strip() == '':
       return messagebox.showerror('Error', 'Error: Please type the file path')
     elif not from_language in from_lang_list:
@@ -157,64 +159,74 @@ def openfile_tr_win():
     elif not to_language in to_lang_list:
       return messagebox.showerror('Error', 'Please check the language you are translating to.')
     else:
-      with open(filepath, "r+", encoding="utf8") as data:
-        global lines
-        lines = data.readlines()
-        if lines == []:
-          return messagebox.showerror('Error', 'Error: The file is empty')
-        tredlines = []
-        progress.configure(determinate_speed=50/len(lines))
-        try:
-          requests.head("http://www.google.com/", timeout=timeout)
-          statues = "online"
-        except requests.ConnectionError:
-          statues= "offline"
-        except requests.exceptions.Timeout:
-          statues = "timeout"
-        if statues == 'online':
-          if from_language == "Auto":
-            for line in lines:
-              a = translator.translate(line, dest=to_language)
-              tredlines.append(a.text)
-              progress.step()
-              file_tr_win.update_idletasks()
-              time.sleep(0.1)
-          else:
-            for line in lines:
-              a = translator.translate(line, dest=to_language, src= from_language)
-              tredlines.append(a.text)
-              progress.step()
-              file_tr_win.update_idletasks()
-              time.sleep(0.1)
-          global string
-          string = ""
-          for line in tredlines:
-              string += (f"{line}\n")
-          progress.set(0)
-          choice_value = radio_value.get()
-          file_name = os.path.basename(filepath)
-          file_type = file_name.split(".")[-1].strip()
-          tr_textbox.configure(state="normal")
-          tr_textbox.delete("1.0", END)
-          tr_textbox.insert(END, string)
-          tr_textbox.configure(state="disabled")
-          if choice_value == 1:
-            with open(f"{file_name}_translated.{file_type}", "w", encoding="utf8") as file:
-              file.write(string)
-          elif choice_value == 2:
-            data.write(f"\n\n{string}")
-          elif choice_value == 3:
-            with open(filepath, "w", encoding="utf8") as file:
-              file.truncate(0)
-              file.write(string)
-        elif statues == "offline":
-          messagebox.showerror('Error', 'Please check your connection')
-        elif statues == "timeout":
-          messagebox.showerror('Error', 'Connection timeout. Please try again later.')
-  file_tr_win.bind('<Return>', lambda event: tr_file())
+      if file_type == 'srt' and radio_value.get() == 0:
+         subs = pysrt.open(filepath)
+         for sub in subs:
+            translated_text = translator.translate(sub.text, dest=to_language).text
+            sub.text = translated_text
+         subs.save('translated_subtitles.srt')
+         return messagebox.showinfo('Done','The file has been translated')
+      elif file_type == 'srt' and radio_value.get() != 0:
+        return messagebox.showerror('Error', ' You can\'t use this option with a srt file')
+      else:
+       with open(filepath, "r+", encoding="utf8") as data:
+         global lines
+         lines = data.readlines()
+         if lines == []:
+           return messagebox.showerror('Error', 'Error: The file is empty')
+         tredlines = []
+         progress.configure(determinate_speed=50/len(lines))
+         try:
+           requests.head("http://www.google.com/", timeout=timeout)
+           statues = "online"
+         except requests.ConnectionError:
+           statues= "offline"
+         except requests.exceptions.Timeout:
+           statues = "timeout"
+         if statues == 'online':
+           if from_language == "Auto":
+             for line in lines:
+               a = translator.translate(line, dest=to_language)
+               tredlines.append(a.text)
+               progress.step()
+               file_tr_win.update_idletasks()
+               time.sleep(0.1)
+           else:
+             for line in lines:
+               a = translator.translate(line, dest=to_language, src= from_language)
+               tredlines.append(a.text)
+               progress.step()
+               file_tr_win.update_idletasks()
+               time.sleep(0.1)
+           global string
+           string = ""
+           for line in tredlines:
+               string += (f"{line}\n")
+           progress.set(0)
+           choice_value = radio_value.get()
+           file_name = os.path.basename(filepath)
+           file_type = file_name.split(".")[-1].strip()
+           tr_textbox.configure(state="normal")
+           tr_textbox.delete("1.0", END)
+           tr_textbox.insert(END, string)
+           tr_textbox.configure(state="disabled")
+           if choice_value == 1:
+             with open(f"{file_name}_translated.{file_type}", "w", encoding="utf8") as file:
+               file.write(string)
+           elif choice_value == 2:
+             data.write(f"\n\n{string}")
+           elif choice_value == 3:
+             with open(filepath, "w", encoding="utf8") as file:
+               file.truncate(0)
+               file.write(string)
+         elif statues == "offline":
+           messagebox.showerror('Error', 'Please check your connection')
+         elif statues == "timeout":
+           messagebox.showerror('Error', 'Connection timeout. Please try again later.')
+    file_tr_win.bind('<Return>', lambda event: tr_file())
 
   # File translation window widgets
-  ct.CTkLabel(file_tr_win, text= "Type The File Path (txt):", font=(None, 25)).place(x= 30, y= 30)
+  ct.CTkLabel(file_tr_win, text= "Type The File Path (txt/srt):", font=(None, 25)).place(x= 30, y= 30)
   file_path_var = StringVar()
   file_path_entry = ct.CTkEntry(file_tr_win, textvariable=file_path_var, width=260, height=30, font=(None, 15), corner_radius=15)
   file_path_entry.place(x= 30 , y= 75)
