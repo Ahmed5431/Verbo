@@ -1,4 +1,5 @@
 # Translator
+<img src="https://img.icons8.com/color/240/null/translate-text.png"/>
 
 # Features
 
