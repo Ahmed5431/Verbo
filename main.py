@@ -144,7 +144,7 @@ def openfile_tr_win():
   file_tr_win.protocol("WM_DELETE_WINDOW", closing)
 
   def locate_txt():
-    filepath = filedialog.askopenfilename(title= "Open a text file", filetypes=(("text files", "*.txt") , ("all files", "*.*")))
+    filepath = filedialog.askopenfilename(title= "Open a text/subtitles file", filetypes=(("text files", "*.txt"),("subtitles files", "*.srt") , ("all files", "*.*")))
     file_path_var.set(filepath)
 
   # File translation function
@@ -164,11 +164,18 @@ def openfile_tr_win():
     else:
       if file_type == 'srt' and radio_value.get() == 0:
          subs = pysrt.open(filepath)
+         progress.configure(determinate_speed=50/len(subs))        
          for sub in subs:
             translated_text = translator.translate(sub.text, dest=to_language).text
             sub.text = translated_text
+            progress.step()
+            file_tr_win.update_idletasks()
+            time.sleep(1)
          subs.save('translated_subtitles.srt')
+         progress.set(0)
+         file_tr_win.update_idletasks()
          return messagebox.showinfo('Done','The file has been translated')
+
       elif file_type == 'srt' and radio_value.get() != 0:
         return messagebox.showerror('Error', ' You can\'t use this option with a srt file')
       else:
