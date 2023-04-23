@@ -2,7 +2,7 @@ from tkinter import *
 import customtkinter as ct
 import requests
 from tkinter import messagebox
-from googletrans import Translator
+from googletrans import Translator, LANGUAGES
 import json
 from tkinter import filedialog
 import time
@@ -64,10 +64,10 @@ tr_textbox.place(x= 50, y= 70)
 to_tr_textbox = ct.CTkTextbox(one, width=280, height=150, font=(None, 21), corner_radius=15)
 to_tr_textbox.place(x= 370, y= 70)
 to_tr_textbox.configure(state="disabled")
-from_lang_list = ["Auto", "Arabic", "German", "English", "French"]
+from_lang_list = ["Auto", "Arabic", "Chinese (simplified)", "Chinese (traditional)", "English", "French", "German", "Italian", "Japanese", "Korean", "Portuguese", "Russian", "Spanish", "Turkish"]
 from_lang_combo = ct.CTkComboBox(one, width= 90, values= from_lang_list, corner_radius=15)
 from_lang_combo.place(x= 170, y= 237)
-to_lang_list = ["Arabic", "German", "English", "French"]
+to_lang_list = ["Arabic", "Chinese (simplified)", "Chinese (traditional)", "English", "French", "German", "Italian", "Japanese", "Korean", "Portuguese", "Russian", "Spanish", "Turkish"]
 to_lang_combo = ct.CTkComboBox(one, width= 90, values= to_lang_list, corner_radius= 15)
 to_lang_combo.place(x= 465, y= 237)
 one.bind('<Return>', lambda event: translate())
@@ -104,10 +104,13 @@ def translate():
   except requests.exceptions.Timeout:
     statues = "timeout"
   if statues == "online":
-    if from_language == "Auto":
-      tran = translator.translate(word, dest=to_language)
-    else:
-      tran = translator.translate(word, dest=to_language, src=from_language)
+    try:
+      if from_language == "Auto":
+        tran = translator.translate(word, dest=to_language)
+      else:
+        tran = translator.translate(word, dest=to_language, src=from_language)
+    except TypeError:
+      messagebox.showerror('Error', 'Sorry, an unexpected error has occured. Please try again.')
     if tran.text == word:
         messagebox.showerror('Error', 'Please check your text or language selection.')
     else:
@@ -233,10 +236,8 @@ def openfile_tr_win():
   ct.CTkButton(file_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate_txt).place(x=300, y=75)
   ct.CTkLabel(file_tr_win, text= "From:", font=(None, 20)).place(x= 40, y=130)
   ct.CTkLabel(file_tr_win, text= "To:", font=(None, 20)).place(x= 220 , y= 130)
-  from_lang_list = ["Auto" ,"Arabic", "German", "English", "French"]
   from_lang_combo = ct.CTkComboBox(file_tr_win, width= 90, corner_radius=15, values= from_lang_list)
   from_lang_combo.place(x=100, y=130)
-  to_lang_list = ["Arabic", "German", "English", "French"]
   to_lang_combo = ct.CTkComboBox(file_tr_win, width= 90, values= to_lang_list, corner_radius=15)
   to_lang_combo.place(x=255, y=130)
   radio_value = IntVar()
@@ -419,17 +420,15 @@ def openaudiotr():
   ct.CTkButton(audio_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate).place(x=300, y=75)
   ct.CTkLabel(audio_tr_win, text= "From:", font=(None, 20)).place(x= 35, y=125)
   ct.CTkLabel(audio_tr_win, text= "To:", font=(None, 20)).place(x= 215 , y= 125)
-  from_lang_list = ["Auto", "Arabic", "German", "English", "French"]
   from_lang_combo = ct.CTkComboBox(audio_tr_win, width= 90, corner_radius=15, values= from_lang_list)
-  to_lang_list = ["Arabic", "German", "English", "French"]
   to_lang_combo= ct.CTkComboBox(audio_tr_win, width= 90, values= to_lang_list, corner_radius=15)
   from_lang_combo.place(x=97, y=125)
   to_lang_combo.place(x=252, y=125)
   radio_value2 = IntVar()
-  radio_a2 = ct.CTkRadioButton(audio_tr_win, variable=radio_value2, value=1, text ="Save the translation in a txt file",corner_radius=15, font=(None, 16))
-  radio_a2.place(x=35, y=170)
-  radio_a3 = ct.CTkRadioButton(audio_tr_win, variable=radio_value2, value=2,text ="Save the translation in a srt file", corner_radius=15, font=(None, 16))
-  radio_a3.place(x=35, y=200)
+  radio_a2 = ct.CTkRadioButton(audio_tr_win, variable=radio_value2, value=1, text ="Save the translation in a txt file",corner_radius=15, font=(None, 20))
+  radio_a2.place(x=35, y=180)
+  radio_a3 = ct.CTkRadioButton(audio_tr_win, variable=radio_value2, value=2,text ="Save the translation in a srt file", corner_radius=15, font=(None, 20))
+  radio_a3.place(x=35, y=215)
   ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_winans).place(x= 270, y= 350)
   ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=lambda: back(audio_tr_win), corner_radius=15, width=70).place(x=20, y= 400)
   ct.CTkLabel(audio_tr_win, text= "The Translation:", font=(None, 25,'bold')).place(x= 440, y=30 )
@@ -482,7 +481,7 @@ def openhistory():
       original = str(row[0]).replace("\n", "")
       translation = str(row[1])
       time_stamp = int(row[2])
-      date = datetime.fromtimestamp(time_stamp).strftime("%B %d, %Y %H:%M")
+      date = datetime.fromtimestamp(time_stamp).strftime("%B %d, %Y %I:%M %p")
       history_textbox.configure(state="normal")
       history_textbox.insert(END, f"{date} --- {original} = {translation}\n")
       history_textbox.configure(state="disabled")
