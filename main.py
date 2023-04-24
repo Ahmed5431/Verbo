@@ -12,7 +12,11 @@ import os
 from pydub import AudioSegment
 import pysrt
 import sqlite3
+import threading
+from threading import Thread
 from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Get config prefences from JSON
@@ -153,8 +157,8 @@ def openfile_tr_win():
     from_language = from_lang_combo.get()
     to_language = to_lang_combo.get()
     filepath = file_path_var.get()
-    file_name = os.path.basename(filepath)
-    file_type = file_name.split(".")[-1].strip()
+    file_name = os.path.splitext(os.path.basename(filepath))[0]
+    file_type = os.path.splitext(filepath)[1]
     if filepath.strip() == '':
       return messagebox.showerror('Error', 'Error: Please type the file path')
     elif not from_language in from_lang_list:
@@ -162,7 +166,7 @@ def openfile_tr_win():
     elif not to_language in to_lang_list:
       return messagebox.showerror('Error', 'Please check the language you are translating to.')
     else:
-      if file_type == 'srt' and radio_value.get() == 0:
+      if file_type == '.srt' and radio_value.get() == 0:
          subs = pysrt.open(filepath)
          progress.configure(determinate_speed=50/len(subs))        
          for sub in subs:
@@ -176,7 +180,7 @@ def openfile_tr_win():
          file_tr_win.update_idletasks()
          return messagebox.showinfo('Done','The file has been translated')
 
-      elif file_type == 'srt' and radio_value.get() != 0:
+      elif file_type == '.srt' and radio_value.get() != 0:
         return messagebox.showerror('Error', ' You can\'t use this option with a srt file')
       else:
        with open(filepath, "r+", encoding="utf8") as data:
@@ -221,7 +225,8 @@ def openfile_tr_win():
            tr_textbox.insert(END, string)
            tr_textbox.configure(state="disabled")
            if choice_value == 1:
-             with open(f"{file_name}_translated.{file_type}", "w", encoding="utf8") as file:
+             directory_path = os.path.dirname(filepath)
+             with open(f"{directory_path}\{file_name}_translated{file_type}", "w", encoding="utf8") as file:
                file.write(string)
            elif choice_value == 2:
              data.write(f"\n\n{string}")
@@ -304,8 +309,8 @@ def openaudiotr():
     elif not to_language in to_lang_list:
       return messagebox.showerror('Error', 'Please check the language you are translating to.')
     if statues == 'online':
-      file_name = os.path.basename(filepath)
-      file_type = file_name.split(".")[-1].strip()
+      file_name = os.path.splitext(os.path.basename(filepath))[0]
+      file_type = os.path.splitext(filepath)[1]
 
       if file_type == "mp4":
           pass
@@ -315,9 +320,9 @@ def openaudiotr():
           pass
       else:
           return messagebox.showerror('Error', 'File format is not supported.')
-      if file_type == 'wav' or file_type == 'mp3' and checkvalue ==2:
+      if file_type == '.wav' or file_type == '.mp3' and checkvalue ==2:
         return messagebox.showerror('Error', ' You can\'t use this option with an audio file')
-      if file_type == "mp3":
+      if file_type == ".mp3":
         input = filepath
         output = "audio_in_wav.wav"
         audio = AudioSegment.from_mp3(input)
@@ -339,7 +344,7 @@ def openaudiotr():
           if checkvalue == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
-      if file_type == "wav":
+      if file_type == ".wav":
         with sr.AudioFile(file_name) as source:
           audio_data = r.record(source)
           adata = r.recognize_google(audio_data)
@@ -354,11 +359,11 @@ def openaudiotr():
           tr_textbox.delete("1.0", END)
           tr_textbox.insert(END, string)
           tr_textbox.configure(state="disabled")
-          if checkvalue.get() == 1:
+          if checkvalue == 1:
             save = open(f"{sfile[0]}.txt", "x")
             save.write(string)
 
-      elif file_type == "mp4":
+      elif file_type == ".mp4":
         if checkvalue == 2:
           video = moviepy.editor.VideoFileClip(filepath)
           audio = video.audio
@@ -408,11 +413,12 @@ def openaudiotr():
           tr_textbox.delete("1.0", END)
           tr_textbox.insert(END, string)
           tr_textbox.configure(state="disabled")
+          directory_path = os.path.dirname(filepath)
           if checkvalue == 1:
-            save = open(f"{sfile[0]}.txt", "x")
+            save = open(f"{directory_path}\{file_name}.txt", "x")
             save.write(string)
-         path = os.path.join(f"{sfile[0]}.wav")
-         os.remove(path)
+          path = os.path.join(f"{directory_path}\{file_name}.wav")
+          os.remove(path)
     elif statues == 'offline':
       messagebox.showerror('Error', 'Error: Please check your connection')
     elif statues == "timeout":
@@ -422,7 +428,7 @@ def openaudiotr():
   ct.CTkLabel(audio_tr_win, text= "Type The File Path                    :", font=(None, 23)).place(x= 30, y= 30)
   ct.CTkLabel(audio_tr_win, text= "(mp4/wav/mp3)", font=(None, 17)).place(x= 235, y= 32)
   path_var = StringVar()
-  entry_a = ct.CTkEntry(audio_tr_win, textvariable=path_var, width=260, height=30, font=(None, 21), corner_radius=15)
+  entry_a = ct.CTkEntry(audio_tr_win, textvariable=path_var, width=260, height=30, font=(None, 15), corner_radius=15)
   entry_a.place(x= 30 , y= 75)
   ct.CTkButton(audio_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate).place(x=300, y=75)
   ct.CTkLabel(audio_tr_win, text= "From:", font=(None, 20)).place(x= 35, y=125)
@@ -440,6 +446,122 @@ def openaudiotr():
   ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=lambda: back(audio_tr_win), corner_radius=15, width=70).place(x=20, y= 400)
   ct.CTkLabel(audio_tr_win, text= "The Translation:", font=(None, 25,'bold')).place(x= 440, y=30 )
   tr_textbox = ct.CTkTextbox(audio_tr_win, width=280, height=230, font=(None, 21), corner_radius=15)
+  tr_textbox.place(x= 400, y= 80)
+  tr_textbox.configure(state="disabled")
+
+# Image translation window
+def openimagetr():
+  one.withdraw() # Main withdraw
+  # Window start
+  image_tr_win = ct.CTkToplevel()
+  image_tr_win.title("Image Translator")
+  image_tr_win.geometry(f"{700}x{450}+{570}+{270}")
+  image_tr_win.resizable(False, False)
+  image_tr_win.iconbitmap("icon.ico")
+  image_tr_win.protocol("WM_DELETE_WINDOW", closing)
+
+  # Locate
+  def locate():
+    filepath = filedialog.askopenfilename(title= "Open a jpg/png file", filetypes=(("Image files", "*.jpg"), ("Image files", "*.png"), ("all files", "*.*")))
+    path_var.set(filepath)
+
+  def img_thread():
+    threading.Thread(target = img_tr).start()
+  # Image translation
+  def img_tr():
+    timeout = 1
+    from_language = from_lang_combo.get()
+    to_language = to_lang_combo.get()
+    filepath = path_var.get()
+    file_name = os.path.splitext(os.path.basename(filepath))[0]
+    file_type = os.path.splitext(filepath)[1]
+    if filepath.strip() == '':
+      return messagebox.showerror('Error', 'Error: Please type the file path')
+    elif not from_language in from_lang_list:
+      return messagebox.showerror('Error', 'Please check the language you are translating from.')
+    elif not to_language in to_lang_list:
+      return messagebox.showerror('Error', 'Please check the language you are translating to.')
+    else:
+      if file_type != ".png" and file_type != ".jpg" and file_type != ".jpeg":
+        messagebox.showerror("Error", "This format is not supported.")
+      else:
+        entry_a.configure(state="disabled")
+        locate_btn.configure(state="disabled")
+        from_lang_combo.configure(state="disabled")
+        to_lang_combo.configure(state="disabled")
+        radio_a2.configure(state="disabled")
+        radio_a3.configure(state="disabled")
+        tr_btn.configure(state="disabled")
+        wait_lbl = ct.CTkLabel(image_tr_win, text= "Wait a moment...", font=(None, 15))
+        wait_lbl.place(x= 313, y= 400)
+        # Getting the text from the image
+        def get_text(api_key):
+          api_url = 'https://api.api-ninjas.com/v1/imagetotext'
+          image_file_descriptor = open(filepath, 'rb')
+          headers = {"X-Api-Key": api_key}
+          files = {'image': image_file_descriptor}
+          response = requests.post(api_url, files=files, headers=headers)
+          text = response.json()
+          string = ""
+          for word in text:
+              string += word['text'] + " "
+          return string
+      try: text = get_text(os.getenv("API_KEY"))
+      except TypeError: text = get_text(os.getenv("API_KEY2"))
+      except: return messagebox.showerror("Sorry, an unexpected error has occured.")
+
+      # Translating
+      try: requests.head("http://www.google.com/", timeout=timeout)
+      except requests.ConnectionError: return messagebox.showerror('Error', 'Please check your connection')
+      except requests.exceptions.Timeout: return messagebox.showerror('Error', 'Connection timeout. Please try again later.')
+      if from_language == "Auto": translation = translator.translate(text, dest=to_language).text
+      else: translation = translator.translate(text, dest=to_language, src=from_language).text
+
+      # Saving the translation
+      tr_textbox.configure(state="normal")
+      tr_textbox.delete("1.0", END)
+      tr_textbox.insert(END, translation)
+      tr_textbox.configure(state="disabled")
+      directory_path = os.path.dirname(filepath)
+      if radio_value2.get() == 1:
+        with open(f"{directory_path}\{file_name}_translated.txt", "w", encoding="utf8") as file:
+          file.write(translation)
+      elif radio_value2.get() == 2:
+        with open(f"{directory_path}\{file_name}_translated.txt", "w", encoding="utf8") as file:
+          file.write(f"{text}\n\n{translation}")
+      entry_a.configure(state="normal")
+      locate_btn.configure(state="normal")
+      from_lang_combo.configure(state="normal")
+      to_lang_combo.configure(state="normal")
+      radio_a2.configure(state="normal")
+      radio_a3.configure(state="normal")
+      tr_btn.configure(state="normal")
+      wait_lbl.configure(text="")
+    image_tr_win.bind('<Return>', lambda event: img_tr())
+
+  # Image translation widgets
+  ct.CTkLabel(image_tr_win, text= "Type The File Path (jpg/png):", font=(None, 25)).place(x= 30, y= 30)
+  path_var = StringVar()
+  entry_a = ct.CTkEntry(image_tr_win, textvariable=path_var, width=260, height=30, font=(None, 15), corner_radius=15)
+  entry_a.place(x= 30 , y= 75)
+  locate_btn = ct.CTkButton(image_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate)
+  locate_btn.place(x=300, y=75)
+  ct.CTkLabel(image_tr_win, text= "From:", font=(None, 20)).place(x= 35, y=125)
+  ct.CTkLabel(image_tr_win, text= "To:", font=(None, 20)).place(x= 215 , y= 125)
+  from_lang_combo = ct.CTkComboBox(image_tr_win, width= 90, corner_radius=15, values= from_lang_list)
+  to_lang_combo= ct.CTkComboBox(image_tr_win, width= 90, values= to_lang_list, corner_radius=15)
+  from_lang_combo.place(x=97, y=125)
+  to_lang_combo.place(x=252, y=125)
+  radio_value2 = IntVar()
+  radio_a2 = ct.CTkRadioButton(image_tr_win, variable=radio_value2, value=1, text ="Save the translation in a txt file",corner_radius=15, font=(None, 20))
+  radio_a2.place(x=35, y=180)
+  radio_a3 = ct.CTkRadioButton(image_tr_win, variable=radio_value2, value=2, text ="Save the original text and the\ntranslation in a txt file",corner_radius=15, font=(None, 20))
+  radio_a3.place(x=35, y=215)
+  tr_btn = ct.CTkButton(image_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=img_thread)
+  tr_btn.place(x= 270, y= 350)
+  ct.CTkButton(image_tr_win, text= 'Back', font=(None, 20), command=lambda: back(image_tr_win), corner_radius=15, width=70).place(x=20, y= 400)
+  ct.CTkLabel(image_tr_win, text= "The Translation:", font=(None, 25,'bold')).place(x= 440, y=30 )
+  tr_textbox = ct.CTkTextbox(image_tr_win, width=280, height=230, font=(None, 21), corner_radius=15)
   tr_textbox.place(x= 400, y= 80)
   tr_textbox.configure(state="disabled")
 
@@ -497,7 +619,8 @@ def openhistory():
 
 # Other windows open buttons
 ct.CTkButton(one, text="Translate File", font=(None, 18), width= 130, height=30, command=openfile_tr_win, corner_radius= 15).place(x=20, y= 310)
-ct.CTkButton(one, text="Translate Audio/Video", font=(None, 18), width= 130, height=30, command=openaudiotr , corner_radius= 15).place(x=20, y= 355)
-ct.CTkButton(one, text="Translation History", font=(None, 18), width= 130, height=30, command=openhistory, corner_radius= 15).place(x=20, y= 400)
+ct.CTkButton(one, text="Translate Image", font=(None, 18), width= 130, height=30, command=openimagetr, corner_radius= 15).place(x=20, y= 355)
+ct.CTkButton(one, text="Translate Audio/Video", font=(None, 18), width= 130, height=30, command=openaudiotr , corner_radius= 15).place(x=20, y= 400)
+ct.CTkButton(one, text="Translation History", font=(None, 18), width= 130, height=30, command=openhistory, corner_radius= 15).place(x=270, y= 400)
 
 one.mainloop()
