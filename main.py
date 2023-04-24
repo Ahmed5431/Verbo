@@ -2,7 +2,7 @@ from tkinter import *
 import customtkinter as ct
 import requests
 from tkinter import messagebox
-from googletrans import Translator, LANGUAGES
+from googletrans import Translator
 import json
 from tkinter import filedialog
 import time
