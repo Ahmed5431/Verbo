@@ -58,6 +58,22 @@ themes_menu = ct.CTkOptionMenu(one, values = ["System", "Dark", "Light"], width 
 themes_menu.place(x = 520 , y = 405)
 themes_menu.set(get_bg_theme().title())
 
+def voice_to_text():
+ r = sr.Recognizer()
+ tr_textbox.configure(state="disabled")
+ with sr.Microphone() as source:
+    r.adjust_for_ambient_noise(source)
+    audio_text = r.listen(source,timeout=5)
+    try:
+     text = r.recognize_google(audio_text)
+     tr_textbox.delete("1.0", END)
+     tr_textbox.insert(END, text)
+     tr_textbox.configure(state="normal")
+    except:
+     return messagebox.showerror('Error', 'Please try again')
+
+
+
 # Main window widgets
 ct.CTkLabel(one, text= "Enter The Text:", font=(None, 29, 'bold')).place(x= 85, y= 25)
 ct.CTkLabel(one, text= "The Translation:", font=(None, 29, 'bold')).place(x= 397, y= 25)
@@ -74,6 +90,7 @@ from_lang_combo.place(x= 170, y= 237)
 to_lang_list = ["Arabic", "Chinese (simplified)", "Chinese (traditional)", "English", "French", "German", "Italian", "Japanese", "Korean", "Portuguese", "Russian", "Spanish", "Turkish"]
 to_lang_combo = ct.CTkComboBox(one, width= 90, values= to_lang_list, corner_radius= 15)
 to_lang_combo.place(x= 465, y= 237)
+ct.CTkButton(one, text="Voice", font=(None, 18), width= 70, height=30,command=voice_to_text, corner_radius= 4).place(x=250, y= 180)
 one.bind('<Return>', lambda event: translate())
 
 # On closing the app
@@ -85,6 +102,8 @@ one.protocol("WM_DELETE_WINDOW", closing)
 def back(window):
   one.deiconify()
   window.withdraw()
+
+
 
 # Text translate function
 def translate():
@@ -503,10 +522,11 @@ def openimagetr():
           response = requests.post(api_url, files=files, headers=headers)
           text = response.json()
           string = ""
+          print(text)
           for word in text:
               string += word['text'] + " "
           return string
-      try: text = get_text(os.getenv("API_KEY"))
+      try: text = get_text(os.getenv("K+vwIRZM3NgfQP2nOBmZqg==0c3QxNHh4dbT9Hwr"))
       except TypeError: text = get_text(os.getenv("API_KEY2"))
       except: return messagebox.showerror("Sorry, an unexpected error has occured.")
 
