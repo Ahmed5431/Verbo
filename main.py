@@ -58,6 +58,7 @@ themes_menu = ct.CTkOptionMenu(one, values = ["System", "Dark", "Light"], width 
 themes_menu.place(x = 520 , y = 405)
 themes_menu.set(get_bg_theme().title())
 
+# Voice input to text function
 def voice_to_text():
  r = sr.Recognizer()
  tr_textbox.configure(state="disabled")
