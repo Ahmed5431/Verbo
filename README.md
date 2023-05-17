@@ -13,15 +13,15 @@
 
 # Screenshots
 - Home window
-![image](https://github.com/Ahmed5431/Translator/assets/125130894/27094492-1587-437c-bbc2-9fa40d539c69)
+- ![image](https://github.com/Ahmed5431/Translator/assets/125130894/27094492-1587-437c-bbc2-9fa40d539c69)
 - File translation window
-![image](https://github.com/Ahmed5431/Translator/assets/125130894/0e468519-267f-460e-9c38-01883d6f245f)
+- ![image](https://github.com/Ahmed5431/Translator/assets/125130894/0e468519-267f-460e-9c38-01883d6f245f)
 - Image translation window
-![image](https://github.com/Ahmed5431/Translator/assets/125130894/cccc9092-b8ec-487f-903a-43b519f07a52)
+- ![image](https://github.com/Ahmed5431/Translator/assets/125130894/cccc9092-b8ec-487f-903a-43b519f07a52)
 - Audio translation window
-![image](https://github.com/Ahmed5431/Translator/assets/125130894/73fb3edb-4a10-4ab3-ae1d-cde567492483)
+- ![image](https://github.com/Ahmed5431/Translator/assets/125130894/73fb3edb-4a10-4ab3-ae1d-cde567492483)
 - History window
-![image](https://github.com/Ahmed5431/Translator/assets/125130894/9acbc73b-521a-43a9-970b-80aed66cf80a)
+- ![image](https://github.com/Ahmed5431/Translator/assets/125130894/9acbc73b-521a-43a9-970b-80aed66cf80a)
 
 
 
