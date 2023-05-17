@@ -1,22 +1,27 @@
 # Translator
 <img src="https://img.icons8.com/color/240/null/translate-text.png"/>
+- An efficient translation app created using Python and customtkinter library with multiple features.
+- Developed by Ahmed Ibrahim & Mohamed Ayman, check his profile: https://github.com/Shinobi7k.
 
 # Features
-
-- translate audio files to text.
-- translate videos audio to text or subtitle file.
-- support subtitle files translate.
-- easy to use and modern history.
-- modern GUI made with customtkinter library
+- Easy translate audio files, subtitles and videos audio to text.
+- Supports image translation.
+- Keep track of all the words and phrases you've translated with a simple history.
+- Modern and easy-to-use Interface
 - Customize your app theme.
-
- 
- - Thanks to Shiniobi's assistance, I successfully completed this Python project., check his github profile: https://github.com/Shinobi7k
+- Supports multiple file formats (txt, wav, mp3, mp4, srt, jpg, png).
 
 # Screenshots
-![image](https://user-images.githubusercontent.com/125130894/233854935-438f2fbe-cdfa-470f-87ca-8913345b4e04.png)
-![image](https://user-images.githubusercontent.com/125130894/233854950-b2d98fd4-0e81-466e-921b-c221bcd37d4b.png)
-![image](https://user-images.githubusercontent.com/125130894/233854968-e8a7f255-f30c-4321-8a70-ca88e24d6b2e.png)
-![image](https://user-images.githubusercontent.com/125130894/233855011-5bf0877a-b8a7-4f9a-a75d-f2d22bb3550f.png)
+- Home window
+![image](https://github.com/Ahmed5431/Translator/assets/125130894/27094492-1587-437c-bbc2-9fa40d539c69)
+- File translation window
+![image](https://github.com/Ahmed5431/Translator/assets/125130894/0e468519-267f-460e-9c38-01883d6f245f)
+- Image translation window
+![image](https://github.com/Ahmed5431/Translator/assets/125130894/cccc9092-b8ec-487f-903a-43b519f07a52)
+- Audio translation window
+![image](https://github.com/Ahmed5431/Translator/assets/125130894/73fb3edb-4a10-4ab3-ae1d-cde567492483)
+- History window
+![image](https://github.com/Ahmed5431/Translator/assets/125130894/9acbc73b-521a-43a9-970b-80aed66cf80a)
+
 
 
