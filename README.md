@@ -1,7 +1,7 @@
 # Translator
 <img src="https://img.icons8.com/color/240/null/translate-text.png"/>
-- An efficient translation app created using Python and customtkinter library with multiple features.
-- Developed by Ahmed Ibrahim & Mohamed Ayman, check his profile: https://github.com/Shinobi7k.
+- An efficient translation app created using Python and customtkinter library with multiple features  
+- Developed by Ahmed Ibrahim & Mohamed Ayman, check his profile: https://github.com/Shinobi7k.  
 
 # Features
 - Easy translate audio files, subtitles and videos audio to text.
