@@ -332,11 +332,11 @@ def openaudiotr():
       file_name = os.path.splitext(os.path.basename(filepath))[0]
       file_type = os.path.splitext(filepath)[1]
 
-      if file_type == "mp4":
+      if file_type == ".mp4":
           pass
-      elif file_type == "wav":
+      elif file_type == ".wav":
           pass
-      elif file_type == "mp3":
+      elif file_type == ".mp3":
           pass
       else:
           return messagebox.showerror('Error', 'File format is not supported.')
@@ -433,12 +433,9 @@ def openaudiotr():
           tr_textbox.delete("1.0", END)
           tr_textbox.insert(END, string)
           tr_textbox.configure(state="disabled")
-          directory_path = os.path.dirname(filepath)
-          if checkvalue == 1:
-            save = open(f"{directory_path}\{file_name}.txt", "x")
-            save.write(string)
-          path = os.path.join(f"{directory_path}\{file_name}.wav")
-          os.remove(path)
+          directory_path = os.path.dirname(filepath)         
+          with open(f"{directory_path}/{file_name}.txt", "w") as f:
+           f.write(string)
     elif statues == 'offline':
       messagebox.showerror('Error', 'Error: Please check your connection')
     elif statues == "timeout":
