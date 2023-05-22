@@ -399,6 +399,7 @@ def openaudiotr():
           sentences = text.split(". ")
           start = 0
           end = 0
+          string = ""
           for i, s in enumerate(sentences):
            duration = len(s.split()) * 0.6
            end = start + duration
@@ -408,10 +409,17 @@ def openaudiotr():
            item.end.seconds = end
            translation = translator.translate(s, dest=to_language , src=from_language)
            item.text = translation.text
+           string = f"{translation.text}\n"
            subs.append(item)
            start = end
           subs.save("subtitles.srt", encoding="utf-8")
           os.remove('audio.wav')
+          tr_textbox.configure(state="normal")
+          tr_textbox.delete("1.0", END)
+          tr_textbox.insert(END, string)
+          tr_textbox.configure(state="disabled")
+
+
 
         else:
          videof = filepath
