@@ -1,6 +1,6 @@
 # Translator
 - An efficient translation app created using Python and customtkinter library with multiple features.     
-- Developed by Ahmed Ibrahim & Mohamed Ayman, check his profile: https://github.com/Shinobi7k. 
+- Developed by [Ahmed Ibrahim](https://github.com/Ahmed5431) & [Mohamed Ayman](https://github.com/Shinobi7k)
 <img src="https://img.icons8.com/color/240/null/translate-text.png"/>
 
 # Features
