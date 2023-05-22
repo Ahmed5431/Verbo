@@ -7,7 +7,7 @@ import json
 from tkinter import filedialog
 import time
 import speech_recognition as sr
-import moviepy.editor
+import subprocess
 import os
 from pydub import AudioSegment
 import pysrt
@@ -362,7 +362,7 @@ def openaudiotr():
           tr_textbox.insert(END, string)
           tr_textbox.configure(state="disabled")
           if checkvalue == 1:
-            save = open(f"{sfile[0]}.txt", "x")
+            save = open(f"{file_name}.txt", "x")
             save.write(string)
       if file_type == ".wav":
         with sr.AudioFile(file_name) as source:
@@ -380,16 +380,16 @@ def openaudiotr():
           tr_textbox.insert(END, string)
           tr_textbox.configure(state="disabled")
           if checkvalue == 1:
-            save = open(f"{sfile[0]}.txt", "x")
+            save = open(f"{file_name}.txt", "x")
             save.write(string)
 
       elif file_type == ".mp4":
         if checkvalue == 2:
-          video = moviepy.editor.VideoFileClip(filepath)
-          audio = video.audio
-          audio.write_audiofile("audio.wav")
+          cmd = f'ffmpeg -i "{filepath}" -vn -acodec copy "{filepath.replace(file_type, "_audio.wav")}"'
+          subprocess.call(cmd, shell=True)
+          audio = filepath.replace(file_type, "_audio.wav")
           r = sr.Recognizer()
-          with sr.AudioFile("audio.wav") as source:
+          with sr.AudioFile(audio) as source:
            audio = r.listen(source)
            try:
             text = r.recognize_google(audio)
@@ -413,7 +413,7 @@ def openaudiotr():
            subs.append(item)
            start = end
           subs.save("subtitles.srt", encoding="utf-8")
-          os.remove('audio.wav')
+          os.remove(audio)
           tr_textbox.configure(state="normal")
           tr_textbox.delete("1.0", END)
           tr_textbox.insert(END, string)
@@ -422,12 +422,10 @@ def openaudiotr():
 
 
         else:
-         videof = filepath
-         video = moviepy.editor.VideoFileClip(videof)
-         audio = video.audio
-         sfile = file_name.split(".")
-         audio.write_audiofile(f"{sfile[0]}.wav")
-         with sr.AudioFile(f"{sfile[0]}.wav") as source:
+         cmd = f'ffmpeg -i "{filepath}" -vn -acodec copy "{filepath.replace(file_type, "_audio.wav")}"'
+         subprocess.call(cmd, shell=True)
+         audio = filepath.replace(file_type, "_audio.wav")
+         with sr.AudioFile(audio) as source:
           audio_data = r.record(source)
           adata = r.recognize_google(audio_data)
           data = f"{adata}"
