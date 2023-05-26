@@ -13,7 +13,8 @@ from pydub import AudioSegment
 import pysrt
 import sqlite3
 import threading
-from threading import Thread
+import threading
+from sys import platform
 from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
@@ -35,7 +36,7 @@ one = ct.CTk()
 one.title('Translator')
 one.geometry(f"{700}x{450}+{570}+{270}")
 one.wm_resizable(False, False)
-one.iconbitmap("icon.ico")
+if platform.startswith("win"): one.iconbitmap("icon.ico")
 
 # Appearance theme function
 def changeTheme(color):
@@ -164,7 +165,7 @@ def openfile_tr_win():
   file_tr_win.title("File Translator")
   file_tr_win.geometry(f"{700}x{450}+{570}+{270}")
   file_tr_win.resizable(False, False)
-  file_tr_win.iconbitmap("icon.ico")
+  if platform.startswith("win"): file_tr_win.iconbitmap("icon.ico")
   file_tr_win.protocol("WM_DELETE_WINDOW", closing)
 
   def locate_txt():
@@ -297,7 +298,7 @@ def openaudiotr():
   audio_tr_win.title("Audio Translator")
   audio_tr_win.geometry(f"{700}x{450}+{570}+{270}")
   audio_tr_win.resizable(False, False)
-  audio_tr_win.iconbitmap("icon.ico")
+  if platform.startswith("win"): audio_tr_win.iconbitmap("icon.ico")
   audio_tr_win.protocol("WM_DELETE_WINDOW", closing)
 
   def locate():
@@ -480,7 +481,7 @@ def openimagetr():
   image_tr_win.title("Image Translator")
   image_tr_win.geometry(f"{700}x{450}+{570}+{270}")
   image_tr_win.resizable(False, False)
-  image_tr_win.iconbitmap("icon.ico")
+  if platform.startswith("win"): image_tr_win.iconbitmap("icon.ico")
   image_tr_win.protocol("WM_DELETE_WINDOW", closing)
 
   # Locate
@@ -597,7 +598,7 @@ def openhistory():
   history_win.title("Translation History")
   history_win.geometry(f"{700}x{450}+{570}+{270}")
   history_win.resizable(False, False)
-  history_win.iconbitmap("icon.ico")
+  if platform.startswith("win"): history_win.iconbitmap("icon.ico")
   history_win.protocol("WM_DELETE_WINDOW", closing)
 
   def delete_history():
