@@ -386,7 +386,7 @@ def openaudiotr():
 
       elif file_type == ".mp4":
         if checkvalue == 2:
-          cmd = f'ffmpeg -i "{filepath}" -vn -acodec copy "{filepath.replace(file_type, "_audio.wav")}"'
+          cmd = f'ffmpeg -i "{filepath}" -vn -acodec pcm_s16le -ar 44100 -ac 2 "{filepath.replace(file_type, "_audio.wav")}"'
           subprocess.call(cmd, shell=True)
           audio = filepath.replace(file_type, "_audio.wav")
           r = sr.Recognizer()
@@ -413,8 +413,8 @@ def openaudiotr():
            string = f"{translation.text}\n"
            subs.append(item)
            start = end
-          subs.save("subtitles.srt", encoding="utf-8")
-          os.remove(audio)
+          subs.save(filepath.replace(file_name, "_subtitle.srt"), encoding="utf-8")
+          os.remove(filepath.replace(file_type, "_audio.wav"))
           tr_textbox.configure(state="normal")
           tr_textbox.delete("1.0", END)
           tr_textbox.insert(END, string)
@@ -423,7 +423,7 @@ def openaudiotr():
 
 
         else:
-         cmd = f'ffmpeg -i "{filepath}" -vn -acodec copy "{filepath.replace(file_type, "_audio.wav")}"'
+         cmd = f'ffmpeg -i "{filepath}" -vn -acodec pcm_s16le -ar 44100 -ac 2 "{filepath.replace(file_type, "_audio.wav")}"'
          subprocess.call(cmd, shell=True)
          audio = filepath.replace(file_type, "_audio.wav")
          with sr.AudioFile(audio) as source:
