@@ -13,7 +13,7 @@
 
 # Screenshots
 ### Home window
-![image](https://github.com/Ahmed5431/Translator/assets/125130894/e3f8fc11-707b-4b3f-91ae-3111d4db5e38)
+![image](https://github.com/Ahmed5431/Translator/assets/125130894/61aa5320-7471-49e1-a82e-8938eaee5961)
 ### File translation window
 ![image](https://github.com/Ahmed5431/Translator/assets/125130894/a16820b5-7d0c-4b32-bbd3-f1d049c61bb9)
 ### Image translation window
