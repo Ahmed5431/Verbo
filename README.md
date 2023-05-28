@@ -18,8 +18,8 @@
 ![image (1)](https://github.com/Ahmed5431/Translator/assets/125130894/c661afca-2d0b-4af6-b59e-10752115e1e9)
 ### Image translation window
 ![image (2)](https://github.com/Ahmed5431/Translator/assets/125130894/af9c9aeb-b078-41b7-8256-936d470f9ffe)
-### Audio translation window
-![image](https://github.com/Ahmed5431/Translator/assets/125130894/db005eba-d74f-4d7e-b0a0-7046a37320f8)
+### Audio/Video translation window
+![image (3)](https://github.com/Ahmed5431/Translator/assets/125130894/840e9ae7-8f85-44ef-a75b-ee35310b8c59)
 ### History window
 ![image (4)](https://github.com/Ahmed5431/Translator/assets/125130894/204390df-e198-4985-a5af-f340ca37920a)
 
