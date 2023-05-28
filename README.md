@@ -15,7 +15,7 @@
 ### Home window
 ![image](https://github.com/Ahmed5431/Translator/assets/125130894/61aa5320-7471-49e1-a82e-8938eaee5961)
 ### File translation window
-![image](https://github.com/Ahmed5431/Translator/assets/125130894/a16820b5-7d0c-4b32-bbd3-f1d049c61bb9)
+![image (1)](https://github.com/Ahmed5431/Translator/assets/125130894/c661afca-2d0b-4af6-b59e-10752115e1e9)
 ### Image translation window
 ![image](https://github.com/Ahmed5431/Translator/assets/125130894/f04a6823-6df6-429a-96ed-c6a0aea76d03)
 ### Audio translation window
