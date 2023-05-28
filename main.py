@@ -247,7 +247,7 @@ def openfile_tr_win():
            tr_textbox.configure(state="disabled")
            if choice_value == 1:
              directory_path = os.path.dirname(filepath)
-             with open(f"{directory_path}\{file_name}_translated{file_type}", "w", encoding="utf8") as file:
+             with open(f"{directory_path}\{file_name}_translated.{file_type}", "w", encoding="utf8") as file:
                file.write(string)
            elif choice_value == 2:
              data.write(f"\n\n{string}")
