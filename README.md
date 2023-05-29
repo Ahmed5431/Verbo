@@ -24,4 +24,67 @@
 ![image (4)](https://github.com/Ahmed5431/Translator/assets/125130894/204390df-e198-4985-a5af-f340ca37920a)
 
 
+## Installation Guide
+### **For Windows:**
+Download the exe from the latest <a href = "https://github.com/Ahmed5431/Translator/releases">release</a>, or install it from the source code:
 
+<ol>
+<li>Install <a href = "https://www.python.org/downloads/">python</a> and <a href = "https://git-scm.com/downloads">git</a> and add them to the path</li>
+
+<li>Download <a href = "https://ffmpeg.org/download.html">ffmpeg</a> and add it to the path or put ffmpeg.exe in the same folder as the script</li>
+
+<li>Git-clone this repo & change directory</li>
+
+```
+git clone https://github.com/Ahmed5431/Translator
+
+cd Translator
+```
+<li>Install modules using pip</li>
+
+```
+pip install -r requirements.txt
+```
+<li>Run the .py file!</li>
+
+```
+py main.py
+```
+</ol>
+
+### **For Linux:**
+Download the executable file for linux from the latest <a href = "https://github.com/Ahmed5431/Translator/releases">release</a> (and run `sudo apt install ffmpeg` in the terminal for audio/video translation support), or install it from the source code:
+<ol>
+<li>Install the following packages:
+
+```
+apt install python3 -y
+apt install python3-pip -y
+sudo apt-get install python3-tk
+sudo apt install git-all
+sudo apt install ffmpeg
+```
+</li>
+<li>Git-clone this repo & change directory
+
+```
+git clone https://github.com/Ahmed5431/Translator.git
+
+cd Translator
+```
+</li>
+<li>
+Install modules using pip
+
+```
+pip install -r requirements.txt
+```
+</li>
+<li>
+Run the .py file!
+
+```
+python3 main.py
+```
+</li>
+</ol>
