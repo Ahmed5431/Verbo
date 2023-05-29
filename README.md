@@ -1,4 +1,4 @@
-# Translator
+# Verbo
 - An efficient translation app created using Python with multiple features.     
 - Developed by [Ahmed Ibrahim](https://github.com/Ahmed5431) & [Mohamed Ayman](https://github.com/Shinobi7k)
 <img src="https://img.icons8.com/color/240/null/translate-text.png"/>
