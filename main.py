@@ -154,6 +154,8 @@ def openfile_tr_win():
     filepath = filedialog.askopenfilename(title= "Open a text/subtitles file", filetypes=(("text files", "*.txt"),("subtitles files", "*.srt") , ("all files", "*.*")))
     file_path_var.set(filepath)
 
+  def file_tr_thread():
+    threading.Thread(target = tr_file).start()
   # File translation function
   def tr_file():
     timeout = 1
@@ -169,17 +171,24 @@ def openfile_tr_win():
     elif not to_language in to_lang_list:
       return messagebox.showerror('Error', 'Please check the language you are translating to.')
     else:
+      file_path_entry.configure(state="disabled")
+      locate_btn.configure(state="disabled")
+      from_lang_combo.configure(state="disabled")
+      to_lang_combo.configure(state="disabled")
+      new_file_radio.configure(state="disabled")
+      update_file_radio.configure(state="disabled")
+      replace_file_radio.configure(state="disabled")
+      tr_btn.configure(state="disabled")
+      wait_lbl = ct.CTkLabel(file_tr_win, text= "Wait a moment...", font=(None, 15))
+      wait_lbl.place(x= 313, y= 400)
       if file_type == '.srt' and radio_value.get() == 0:
          subs = pysrt.open(filepath)
-         progress.configure(determinate_speed=50/len(subs))        
          for sub in subs:
             translated_text = translator.translate(sub.text, dest=to_language).text
             sub.text = translated_text
-            progress.step()
             file_tr_win.update_idletasks()
             time.sleep(1)
-         subs.save('translated_subtitles.srt')
-         progress.set(0)
+         subs.save(filepath.replace(file_type, "translated_subtitles.srt"))
          file_tr_win.update_idletasks()
          return messagebox.showinfo('Done','The file has been translated')
 
@@ -192,7 +201,6 @@ def openfile_tr_win():
          if lines == []:
            return messagebox.showerror('Error', 'Error: The file is empty')
          tredlines = []
-         progress.configure(determinate_speed=50/len(lines))
          try:
            requests.head("http://www.google.com/", timeout=timeout)
            statues = "online"
@@ -205,21 +213,18 @@ def openfile_tr_win():
              for line in lines:
                a = translator.translate(line, dest=to_language)
                tredlines.append(a.text)
-               progress.step()
                file_tr_win.update_idletasks()
                time.sleep(0.1)
            else:
              for line in lines:
                a = translator.translate(line, dest=to_language, src= from_language)
                tredlines.append(a.text)
-               progress.step()
                file_tr_win.update_idletasks()
                time.sleep(0.1)
            global string
            string = ""
            for line in tredlines:
                string += (f"{line}\n")
-           progress.set(0)
            choice_value = radio_value.get()
            file_name = os.path.basename(filepath)
            file_type = file_name.split(".")[-1].strip()
@@ -241,6 +246,15 @@ def openfile_tr_win():
            messagebox.showerror('Error', 'Please check your connection')
          elif statues == "timeout":
            messagebox.showerror('Error', 'Connection timeout. Please try again later.')
+    file_path_entry.configure(state="normal")
+    locate_btn.configure(state="normal")
+    from_lang_combo.configure(state="normal")
+    to_lang_combo.configure(state="normal")
+    new_file_radio.configure(state="normal")
+    update_file_radio.configure(state="normal")
+    replace_file_radio.configure(state="normal")
+    tr_btn.configure(state="normal")
+    wait_lbl.configure(text="")
     file_tr_win.bind('<Return>', lambda event: tr_file())
 
   # File translation window widgets
@@ -248,7 +262,8 @@ def openfile_tr_win():
   file_path_var = StringVar()
   file_path_entry = ct.CTkEntry(file_tr_win, textvariable=file_path_var, width=260, height=30, font=(None, 15), corner_radius=15)
   file_path_entry.place(x= 30 , y= 75)
-  ct.CTkButton(file_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate_txt).place(x=300, y=75)
+  locate_btn = ct.CTkButton(file_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate_txt)
+  locate_btn.place(x=300, y=75)
   ct.CTkLabel(file_tr_win, text= "From:", font=(None, 20)).place(x= 40, y=130)
   ct.CTkLabel(file_tr_win, text= "To:", font=(None, 20)).place(x= 220 , y= 130)
   from_lang_combo = ct.CTkComboBox(file_tr_win, width= 90, corner_radius=15, values= from_lang_list)
@@ -262,11 +277,9 @@ def openfile_tr_win():
   update_file_radio.place(x=40, y=220)
   replace_file_radio = ct.CTkRadioButton(file_tr_win, variable=radio_value, value=3, text ="Replace file with translation", font=(None, 20))
   replace_file_radio.place(x=40, y=255)
-  ct.CTkButton(file_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=tr_file).place(x= 250, y= 330)
+  tr_btn = ct.CTkButton(file_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=file_tr_thread)
+  tr_btn.place(x= 250, y= 330)
   ct.CTkButton(file_tr_win, text= 'Back', font=(None, 20), command=lambda: back(file_tr_win), corner_radius=15, width=70).place(x=20, y= 400)
-  progress = ct.CTkProgressBar(file_tr_win, width=240, mode= 'determinate', height= 10, corner_radius=20)
-  progress.set(0)
-  progress.place(x=230, y=400)
   ct.CTkLabel(file_tr_win, text= "The Translation:", font=(None, 25,'bold')).place(x= 440, y=30 )
   tr_textbox = ct.CTkTextbox(file_tr_win, width=280, height=230, font=(None, 21), corner_radius=15)
   tr_textbox.place(x= 400, y= 75)
@@ -287,6 +300,8 @@ def openaudiotr():
     filepath = filedialog.askopenfilename(title= "Open a wav/mp4 file", filetypes=(("Video files", "*.mp4"), ("Audio files", "*.wav"),("Audio files", "*.mp3"), ("all files", "*.*")))
     path_var.set(filepath)
 
+  def audio_tr_thread():
+    threading.Thread(target = audio_tr_winans).start()
   # Audio translation function
   def audio_tr_winans():
     checkvalue = radio_value2.get()
@@ -325,6 +340,15 @@ def openaudiotr():
           return messagebox.showerror('Error', 'File format is not supported.')
       if file_type == '.wav' or file_type == '.mp3' and checkvalue ==2:
         return messagebox.showerror('Error', ' You can\'t use this option with an audio file')
+      entry_a.configure(state="disabled")
+      locate_btn.configure(state="disabled")
+      from_lang_combo.configure(state="disabled")
+      to_lang_combo.configure(state="disabled")
+      radio_a2.configure(state="disabled")
+      radio_a3.configure(state="disabled")
+      tr_btn.configure(state="disabled")
+      wait_lbl = ct.CTkLabel(audio_tr_win, text= "Wait a moment...", font=(None, 15))
+      wait_lbl.place(x= 313, y= 400)
       if file_type == ".mp3":
         input = filepath
         output = "audio_in_wav.wav"
@@ -395,7 +419,7 @@ def openaudiotr():
            string = f"{translation.text}\n"
            subs.append(item)
            start = end
-          subs.save('translated_subs.srt', encoding='utf-8')
+          subs.save(filepath.replace(file_type, "translated_subtitles.srt"), encoding='utf-8')
           os.remove(filepath.replace(file_type, "_audio.wav"))
           tr_textbox.configure(state="normal")
           tr_textbox.delete("1.0", END)
@@ -429,6 +453,14 @@ def openaudiotr():
       messagebox.showerror('Error', 'Error: Please check your connection')
     elif statues == "timeout":
       messagebox.showerror('Error', 'Connection timeout. Please try again later.')
+    entry_a.configure(state="normal")
+    locate_btn.configure(state="normal")
+    from_lang_combo.configure(state="normal")
+    to_lang_combo.configure(state="normal")
+    radio_a2.configure(state="normal")
+    radio_a3.configure(state="normal")
+    tr_btn.configure(state="normal")
+    wait_lbl.configure(text="")
 
   # Audio translation widgets
   ct.CTkLabel(audio_tr_win, text= "Type The File Path                    :", font=(None, 23)).place(x= 30, y= 30)
@@ -436,7 +468,8 @@ def openaudiotr():
   path_var = StringVar()
   entry_a = ct.CTkEntry(audio_tr_win, textvariable=path_var, width=260, height=30, font=(None, 15), corner_radius=15)
   entry_a.place(x= 30 , y= 75)
-  ct.CTkButton(audio_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate).place(x=300, y=75)
+  locate_btn = ct.CTkButton(audio_tr_win, text= 'Locate', corner_radius=15, font=(None, 17), width=60, command=locate)
+  locate_btn.place(x=300, y=75)
   ct.CTkLabel(audio_tr_win, text= "From:", font=(None, 20)).place(x= 35, y=125)
   ct.CTkLabel(audio_tr_win, text= "To:", font=(None, 20)).place(x= 215 , y= 125)
   from_lang_combo = ct.CTkComboBox(audio_tr_win, width= 90, corner_radius=15, values= from_lang_list)
@@ -448,7 +481,8 @@ def openaudiotr():
   radio_a2.place(x=35, y=180)
   radio_a3 = ct.CTkRadioButton(audio_tr_win, variable=radio_value2, value=2,text ="Save the translation in a srt file", corner_radius=15, font=(None, 20))
   radio_a3.place(x=35, y=215)
-  ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_winans).place(x= 270, y= 350)
+  tr_btn = ct.CTkButton(audio_tr_win, text="Translate", font=(None, 20), width= 190, height=40, corner_radius=15, command=audio_tr_thread)
+  tr_btn.place(x= 270, y= 350)
   ct.CTkButton(audio_tr_win, text= 'Back', font=(None, 20), command=lambda: back(audio_tr_win), corner_radius=15, width=70).place(x=20, y= 400)
   ct.CTkLabel(audio_tr_win, text= "The Translation:", font=(None, 25,'bold')).place(x= 440, y=30 )
   tr_textbox = ct.CTkTextbox(audio_tr_win, width=280, height=230, font=(None, 21), corner_radius=15)
