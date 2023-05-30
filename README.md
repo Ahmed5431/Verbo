@@ -1,4 +1,4 @@
-# Translator
+# Verbo
 - An efficient translation app created using Python with multiple features.     
 - Developed by [Ahmed Ibrahim](https://github.com/Ahmed5431) & [Mohamed Ayman](https://github.com/Shinobi7k)
 <img src="https://img.icons8.com/color/240/null/translate-text.png"/>
@@ -23,10 +23,9 @@
 ### History window
 ![image (4)](https://github.com/Ahmed5431/Translator/assets/125130894/204390df-e198-4985-a5af-f340ca37920a)
 
-
 ## Installation Guide
 ### **For Windows:**
-Download the exe from the latest <a href = "https://github.com/Ahmed5431/Translator/releases">release</a>, or install it from the source code:
+Download the exe from the latest <a href = "https://github.com/Ahmed5431/Verbo/releases">1.0.0</a>, or install it from the source code:
 
 <ol>
 <li>Install <a href = "https://www.python.org/downloads/">python</a> and <a href = "https://git-scm.com/downloads">git</a> and add them to the path</li>
@@ -36,9 +35,8 @@ Download the exe from the latest <a href = "https://github.com/Ahmed5431/Transla
 <li>Git-clone this repo & change directory</li>
 
 ```
-git clone https://github.com/Ahmed5431/Translator
-
-cd Translator
+git clone https://github.com/Ahmed5431/Verbo
+cd Verbo
 ```
 <li>Install modules using pip</li>
 
@@ -53,7 +51,7 @@ py main.py
 </ol>
 
 ### **For Linux:**
-Download the executable file for linux from the latest <a href = "https://github.com/Ahmed5431/Translator/releases">release</a> (and run `sudo apt install ffmpeg` in the terminal for audio/video translation support), or install it from the source code:
+Download the executable file for linux from the latest <a href = "https://github.com/Ahmed5431/Verbo/releases">1.0.0</a> (and run `sudo apt install ffmpeg` in the terminal for audio/video translation support), or install it from the source code:
 <ol>
 <li>Install the following packages:
 
@@ -68,20 +66,14 @@ sudo apt install ffmpeg
 <li>Git-clone this repo & change directory
 
 ```
-git clone https://github.com/Ahmed5431/Translator.git
-
-cd Translator
+git clone https://github.com/Ahmed5431/Verbo.git
+cd Verbo
 ```
 </li>
 <li>
 Install modules using pip
 
-```
-pip install -r requirements.txt
-```
-</li>
-<li>
-Run the .py file!
+
 
 ```
 python3 main.py
