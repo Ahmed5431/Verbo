@@ -54,9 +54,9 @@ def changeTheme(color):
     with open("theme_config.json", "w", encoding="utf8") as f:
         theme[to_change] = color
         json.dump(theme, f, sort_keys = True, indent = 4, ensure_ascii = False)
-ct.CTkLabel(one, text = "Appearance Settings", font = ("arial bold", 19)).place(x=490, y=365)
+ct.CTkLabel(one, text = "Appearance Settings", font = ("arial bold", 19)).place(x=490, y=315)
 themes_menu = ct.CTkOptionMenu(one, values = ["System", "Dark", "Light"], width = 130, command = changeTheme, corner_radius = 15)
-themes_menu.place(x = 520 , y = 405)
+themes_menu.place(x = 520 , y = 355)
 themes_menu.set(get_bg_theme().title())
 
 # Main window widgets
@@ -624,10 +624,37 @@ def openhistory():
     history_textbox.configure(state="disabled")
   except sqlite3.OperationalError: pass
 
+
+
+
+def OpenAbout():
+  one.withdraw() # Main withdraw
+  # Window start
+  About_win = ct.CTkToplevel()
+  About_win.title("About Us")
+  About_win.geometry(f"{700}x{450}+{570}+{270}")
+  About_win.resizable(False, False)
+  if platform.startswith("win"): About_win.iconbitmap("icon.ico")
+  About_win.protocol("WM_DELETE_WINDOW", closing)
+  #About Us Widgets
+  ct.CTkLabel(About_win, text="Mohamed Ayman :", font=(None, 22)).place(x =15,y=25)
+  About_textbox1 = ct.CTkTextbox(About_win, width=679, height=135, font=(None, 20), corner_radius=15)
+  About_textbox1.place(x= 15, y=65 )
+  About_textbox1.insert(END, "Github: https://github.com/Shinobi7k\nTwitter: https://twitter.com/Shinobi7k\nGmail: medoems2210@gmail.com")
+  About_textbox1.configure(state="disabled")
+  ct.CTkLabel(About_win, text="Ahmed Ibrahim:", font=(None, 22)).place(x =15,y=215)
+  About_textbox2 = ct.CTkTextbox(About_win, width=679, height=135, font=(None, 20), corner_radius=15)
+  About_textbox2.place(x= 15, y=255 )
+  About_textbox2.insert(END, "Github: https://github.com/Ahmed5431\nGmail: ahmody543@gmail.com")
+  About_textbox2.configure(state="disabled")
+  About_textbox2.configure(state="disabled")
+  ct.CTkButton(About_win, text= 'Back', font=(None, 20), command=lambda: back(About_win), corner_radius=15, width=70).place(x=20, y= 400)
+
 # Other windows open buttons
 ct.CTkButton(one, text="Translate File", font=(None, 18), width= 130, height=30, command=openfile_tr_win, corner_radius= 15).place(x=20, y= 310)
 ct.CTkButton(one, text="Translate Image", font=(None, 18), width= 130, height=30, command=openimagetr, corner_radius= 15).place(x=20, y= 355)
 ct.CTkButton(one, text="Translate Audio/Video", font=(None, 18), width= 130, height=30, command=openaudiotr , corner_radius= 15).place(x=20, y= 400)
 ct.CTkButton(one, text="Translation History", font=(None, 18), width= 130, height=30, command=openhistory, corner_radius= 15).place(x=270, y= 400)
+ct.CTkButton(one, text= "About Us", font=(None, 18), width= 130, height= 30, command=OpenAbout,corner_radius=15).place(x= 520,y=400)
 
 one.mainloop()
