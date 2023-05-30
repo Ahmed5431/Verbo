@@ -395,7 +395,7 @@ def openaudiotr():
            string = f"{translation.text}\n"
            subs.append(item)
            start = end
-          subs.save(filepath.replace(file_name, "_subtitle.srt"), encoding="utf-8")
+          subs.save('translated_subs.srt', encoding='utf-8')
           os.remove(filepath.replace(file_type, "_audio.wav"))
           tr_textbox.configure(state="normal")
           tr_textbox.delete("1.0", END)
