@@ -190,7 +190,7 @@ def openfile_tr_win():
             time.sleep(1)
          subs.save(filepath.replace(file_type, "translated_subtitles.srt"))
          file_tr_win.update_idletasks()
-         return messagebox.showinfo('Done','The file has been translated')
+         return messagebox.showinfo('Done','The file has been translated and saved')
 
       elif file_type == '.srt' and radio_value.get() != 0:
         return messagebox.showerror('Error', ' You can\'t use this option with a srt file')
