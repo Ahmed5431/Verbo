@@ -73,12 +73,7 @@ cd Verbo
 <li>
 Install modules using pip
 
-```
-pip install -r requirements.txt
-```
-</li>
-<li>
-Run the .py file!
+
 
 ```
 python3 main.py
