@@ -25,7 +25,7 @@
 
 ## Installation Guide
 ### **For Windows:**
-Download the exe from the latest <a href = "https://github.com/Ahmed5431/Verbo/releases">1.0.0</a>, or install it from the source code:
+Download the exe from the latest <a href = "https://github.com/Ahmed5431/Verbo/releases">1.1.0</a>, or install it from the source code:
 
 <ol>
 <li>Install <a href = "https://www.python.org/downloads/">python</a> and <a href = "https://git-scm.com/downloads">git</a> and add them to the path</li>
@@ -51,7 +51,7 @@ py main.py
 </ol>
 
 ### **For Linux:**
-Download the executable file for linux from the latest <a href = "https://github.com/Ahmed5431/Verbo/releases">1.0.0</a> (and run `sudo apt install ffmpeg` in the terminal for audio/video translation support), or install it from the source code:
+Download the executable file for linux from the latest <a href = "https://github.com/Ahmed5431/Verbo/releases">1.1.0</a> (and run `sudo apt install ffmpeg` in the terminal for audio/video translation support), or install it from the source code:
 <ol>
 <li>Install the following packages:
 
